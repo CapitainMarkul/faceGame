@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.otaliastudios.cameraview.CameraView
+            android:id="@+id/cameraView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cameraAudio="off"
+            app:cameraAudioBitRate="0"
+            app:cameraFacing="front"
+            app:cameraFlash="off"
+            app:cameraHdr="off"
+            app:cameraVideoCodec="deviceDefault"
+            app:cameraWhiteBalance="auto"/>
+
+        <TextView
+            android:id="@+id/txtLandscape"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:textColor="@android:color/black"
+            tools:text="Poerpo\nweorigjoewirgj"/>
+
+    </FrameLayout>
+
+</layout>

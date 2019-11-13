@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour
 import ru.tzhack.facegame.R
 import ru.tzhack.facegame.databinding.FragmentTrackingBinding
 import ru.tzhack.facegame.facetraking.mlkit.MlKitDebugListener
@@ -18,6 +18,7 @@ import ru.tzhack.facegame.facetraking.util.heroHorizontalAnim
 import ru.tzhack.facegame.facetraking.util.maxHeadZ
 import ru.tzhack.facegame.facetraking.util.minHeadZ
 import ru.tzhack.facegame.facetraking.util.speedMultiply
+
 
 class TrackingFragment : Fragment() {
 
@@ -46,6 +47,14 @@ class TrackingFragment : Fragment() {
             Toast.makeText(activity, "SMILE!!!", Toast.LENGTH_SHORT).show()
         }
 
+        override fun onHeroRightEyeAnim() {
+            //TODO:
+        }
+
+        override fun onHeroLeftEyeAnim() {
+            //TODO:
+        }
+
         override fun onError(exception: Exception) {
             //TODO:
         }
@@ -53,30 +62,7 @@ class TrackingFragment : Fragment() {
 
     private val mlKitDebugListener = object : MlKitDebugListener {
         override fun onDebugInfo(face: FirebaseVisionFace?) {
-            face?.let {
-                val result =
-//                        "LEFT_EYE: \n${face.getLandmark(FirebaseVisionFaceLandmark.LEFT_EYE)?.position}\n\n" +
-                    "RIGHT_EYE: \n${face.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EYE)?.position}\n\n" +
-//                                "NOSE_BASE: \n${face.getLandmark(FirebaseVisionFaceLandmark.NOSE_BASE)?.position}\n\n" +
-//                                "LEFT_EAR: \n${face.getLandmark(FirebaseVisionFaceLandmark.LEFT_EAR)?.position}\n\n" +
-//                                "Left RIGHT_EAR: \n${face.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EAR)?.position}\n\n" +
-
-//                    "Left RIGHT_EAR: \n${face.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EAR)?.position}\n\n" +
-//                                "Left RIGHT_EAR: \n${face.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EAR)?.position}\n\n" +
-
-//                                "MOUTH_LEFT: \n${face.getLandmark(FirebaseVisionFaceLandmark.MOUTH_LEFT)?.position}\n\n" +
-//                                "MOUTH_RIGHT: \n${face.getLandmark(FirebaseVisionFaceLandmark.MOUTH_RIGHT)?.position}\n\n" +
-//                                "MOUTH_BOTTOM: \n${face.getLandmark(FirebaseVisionFaceLandmark.MOUTH_BOTTOM)?.position}\n\n" +
-//                                "\n\n" +
-//                                "SMILE: ${face.smilingProbability}\n" +
-//                                "LEFT_EYE_PROPAB: ${face.leftEyeOpenProbability}\n" +
-//                                "RIGHT_EYE_PROPAB: ${face.rightEyeOpenProbability}\n" +
-//                                "\n\n" +
-//                    "HEAD_Y: \n${it.headEulerAngleY}\n" +
-                            "HEAD_Z: \n${it.headEulerAngleZ}"
-
-                binding.txtDebugInfo.text = result
-            }
+            face?.let {printContourOnFace(it) }
         }
     }
 
@@ -108,5 +94,17 @@ class TrackingFragment : Fragment() {
         } / maxHeadZ * speedMultiply
 
         binding.txtHeroAngle.text = "$angleValue"
+    }
+
+    private fun printContourOnFace(face: FirebaseVisionFace) {
+        binding.faceOverlayView.updateContour(
+            face.boundingBox,
+            listOf(
+                face.getContour(FirebaseVisionFaceContour.LEFT_EYEBROW_BOTTOM).points,
+                face.getContour(FirebaseVisionFaceContour.LEFT_EYEBROW_TOP).points,
+                face.getContour(FirebaseVisionFaceContour.RIGHT_EYEBROW_BOTTOM).points,
+                face.getContour(FirebaseVisionFaceContour.RIGHT_EYEBROW_TOP).points
+            )
+        )
     }
 }

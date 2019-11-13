@@ -9,3 +9,15 @@ private const val correctProbabilityPercent = 0.75F
  * */
 fun FirebaseVisionFace.checkSmileOnFaceAvailable(): Boolean =
     smilingProbability > correctProbabilityPercent
+
+/**
+ * Метод для проверки подмигивания правым глазом.
+ * */
+fun FirebaseVisionFace.checkRightEyeCloseOnFaceAvailable(): Boolean =
+    rightEyeOpenProbability > correctProbabilityPercent
+
+/**
+ * Метод для проверки подмигивания левым глазом.
+ * */
+fun FirebaseVisionFace.checkLeftEyeCloseOnFaceAvailable(): Boolean =
+    leftEyeOpenProbability > correctProbabilityPercent

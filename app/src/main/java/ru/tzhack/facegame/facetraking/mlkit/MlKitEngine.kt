@@ -4,6 +4,8 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
 import com.otaliastudios.cameraview.frame.Frame
+import ru.tzhack.facegame.facetraking.util.checkLeftEyeCloseOnFaceAvailable
+import ru.tzhack.facegame.facetraking.util.checkRightEyeCloseOnFaceAvailable
 import ru.tzhack.facegame.facetraking.util.checkSmileOnFaceAvailable
 import ru.tzhack.facegame.facetraking.util.getVisionImageFromFrame
 
@@ -25,9 +27,9 @@ class MlKitEngine {
             val options = FirebaseVisionFaceDetectorOptions.Builder()
                 .setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST)
 //                .setLandmarkMode(FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS)
-                .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
                 .setContourMode(FirebaseVisionFaceDetectorOptions.ALL_CONTOURS)
-                .setMinFaceSize(0.1F)
+                .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
+                .setMinFaceSize(0.9F)
                 .build()
 
             faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(options)
@@ -43,6 +45,8 @@ class MlKitEngine {
                             onHeroHorizontalAnim(face.headEulerAngleZ)
                             //onHeroSpeedAnim(face.headEulerAngleZ)
                             if (face.checkSmileOnFaceAvailable()) onHeroSuperPowerAnim()
+                            if (face.checkRightEyeCloseOnFaceAvailable()) onHeroRightEyeAnim()
+                            if (face.checkLeftEyeCloseOnFaceAvailable()) onHeroLeftEyeAnim()
 
                             //Debug Info
                             debugListener?.onDebugInfo(face)

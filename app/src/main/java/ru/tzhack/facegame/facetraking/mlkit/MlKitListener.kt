@@ -25,6 +25,16 @@ interface MlKitListener {
     fun onHeroSuperPowerAnim()
 
     /**
+     * Метод вызывается, когда игрок подмигивает правым глазом.
+     * */
+    fun onHeroRightEyeAnim()
+
+    /**
+     * Метод вызывается, когда игрок подмигивает левым глазом.
+     * */
+    fun onHeroLeftEyeAnim()
+
+    /**
      * Метод для вывода ошибок в работе MlKit.
      *
      * @param exception информация об ошибке.

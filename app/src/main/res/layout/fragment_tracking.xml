@@ -14,7 +14,7 @@
         android:orientation="vertical">
 
         <com.otaliastudios.cameraview.CameraView
-            android:id="@+id/cameraView"
+            android:id="@+id/camera_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:cameraAudio="off"
@@ -26,7 +26,7 @@
             app:cameraWhiteBalance="auto"/>
 
         <TextView
-            android:id="@+id/txtLandscape"
+            android:id="@+id/txt_debug_info"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/white"
@@ -34,6 +34,20 @@
             android:orientation="vertical"
             android:textColor="@android:color/black"
             tools:text="Poerpo\nweorigjoewirgj"/>
+
+        <TextView
+            android:id="@+id/txt_hero_angle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:layout_gravity="center_horizontal|bottom"/>
+
+        <TextView
+            android:id="@+id/txt_hero"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:background="@android:color/holo_red_dark"/>
 
     </FrameLayout>
 

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="@dimen/camera_view_width"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="@dimen/camera_view_height">
+
+            <com.otaliastudios.cameraview.CameraView
+                android:id="@+id/camera_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cameraAudio="off"
+                app:cameraAudioBitRate="0"
+                app:cameraFacing="front"
+                app:cameraFlash="off"
+                app:cameraHdr="off"
+                app:cameraVideoCodec="deviceDefault"
+                app:cameraWhiteBalance="auto"/>
+
+            <ru.tzhack.facegame.facetraking.view.FaceContourRender
+                android:id="@+id/face_overlay_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/txt_debug_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:textColor="@android:color/black"
+            tools:text="Poerpo\nweorigjoewirgj"/>
+
+        <TextView
+            android:id="@+id/txt_hero_angle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="30dp"/>
+
+        <TextView
+            android:id="@+id/txt_hero"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:background="@android:color/holo_red_dark"/>
+
+    </FrameLayout>
+
+</layout>

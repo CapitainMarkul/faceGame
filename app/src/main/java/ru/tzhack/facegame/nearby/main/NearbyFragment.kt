@@ -43,12 +43,14 @@ class NearbyFragment : Fragment(), ViewModelStoreOwner {
     private fun showHostFragment() {
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, NearbyHostFragment.createFragment(getNickname()), NearbyHostFragment.TAG)
+            ?.addToBackStack(null)
             ?.commit()
     }
 
     private fun showSlaveFragment() {
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, NearbySlaveFragment.createFragment(getNickname()), NearbySlaveFragment.TAG)
+            ?.addToBackStack(null)
             ?.commit()
     }
 

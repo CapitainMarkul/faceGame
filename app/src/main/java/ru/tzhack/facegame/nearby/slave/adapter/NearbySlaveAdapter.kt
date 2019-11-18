@@ -34,6 +34,28 @@ class NearbySlaveAdapter(private val listener: OnPlayerClickListener) : Recycler
         notifyDataSetChanged()
     }
 
+    fun addItem(player: NearbyPlayer) {
+        playerList.add(player)
+        notifyDataSetChanged()
+    }
+
+    fun updateItemConnected(playerEndPointId: String) {
+        playerList.find { it.playerEndPoint == playerEndPointId }?.connectSuccess = true
+        notifyDataSetChanged()
+    }
+
+    fun removeItem(playerEndPointId: String) {
+        playerList.first { it.playerEndPoint == playerEndPointId }.let {
+            playerList.remove(it)
+            notifyDataSetChanged()
+        }
+    }
+
+    fun removeAllItems() {
+        playerList.clear()
+        notifyDataSetChanged()
+    }
+
     class ViewHolder(view: View) :
         ViewDataBindingHolder<ItemPlayerNearbyBinding>(DataBindingUtil.bind(view)!!) {
 

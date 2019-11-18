@@ -5,21 +5,40 @@
 
     <data>
 
+        <import type="android.view.View"/>
+
         <variable
             name="viewModel"
             type="ru.tzhack.facegame.data.model.NearbyPlayer"/>
 
     </data>
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/player_item_height"
-        android:ellipsize="end"
-        android:gravity="center_vertical"
-        android:maxLines="1"
-        android:paddingStart="@dimen/default_padding"
-        android:paddingEnd="@dimen/default_padding"
-        android:text="@{viewModel.playerNickname}"
-        android:textSize="18sp"
-        tools:text="NickName"/>
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="@dimen/player_item_height"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingStart="@dimen/default_padding"
+            android:paddingEnd="@dimen/default_padding"
+            android:text="@{viewModel.playerNickname}"
+            android:textSize="18sp"
+            tools:text="NickName"/>
+
+        <ProgressBar
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewModel.connectSuccess ? View.GONE : View.VISIBLE}"/>
+
+    </LinearLayout>
+
 </layout>

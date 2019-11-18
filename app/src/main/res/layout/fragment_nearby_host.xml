@@ -62,6 +62,14 @@
             tools:itemCount="4"
             tools:listitem="@layout/item_player_nearby"/>
 
+        <Button
+            android:id="@+id/btn_start_game"
+            android:layout_width="200dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Начать игру"
+            android:background="@color/colorPrimaryDark"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
 </layout>

@@ -1,13 +1,16 @@
 package ru.tzhack.facegame.facetraking.util
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.core.view.ViewCompat
+import ru.tzhack.facegame.facetraking.mlkit.maxHeadZ
+import ru.tzhack.facegame.facetraking.mlkit.minHeadZ
 
 /* TODO: Make Private to Release */
 const val speedMultiply = 150F
-const val maxHeadZ = 25F
-const val minHeadZ = maxHeadZ * -1
 
 fun View.heroHorizontalAnim(headEulerAngleZ: Float) {
     val angleValue = when {
@@ -17,6 +20,25 @@ fun View.heroHorizontalAnim(headEulerAngleZ: Float) {
     } / maxHeadZ * speedMultiply
 
     translationTo(angleValue)
+}
+
+fun View.fadeInOutAnim(actionAfterFadeOut: () -> Unit) {
+    val animDuration = 400L
+    val fadeInAnim = ValueAnimator.ofFloat(0F, 1F).apply {
+        duration = animDuration
+        addUpdateListener { value -> alpha = value.animatedValue as Float }
+        interpolator = LinearInterpolator()
+
+        repeatCount = 1
+        repeatMode = ValueAnimator.REVERSE
+        addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                actionAfterFadeOut()
+            }
+        })
+    }
+
+    fadeInAnim.start()
 }
 
 /*** Anim */

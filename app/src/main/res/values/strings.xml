@@ -5,4 +5,15 @@
     <string name="btn_search_game">Start Search</string>
 
     <string name="player_nickname_hint">Nickname</string>
+
+    <!--    TODO: translate to English -->
+    <string name="face_emoji_left_eye_close">Подмигните левым глазом</string>
+    <string name="face_emoji_right_eye_close">Подмигните правым глазом</string>
+    <string name="face_emoji_smile">Улыбнитесь :)</string>
+    <string name="face_emoji_mouth_open">Откройте рот</string>
+    <string name="face_emoji_head_bias_left">Наклоните голову влево</string>
+    <string name="face_emoji_head_bias_right">Наклоните голову вправо</string>
+
+    <string name="face_emoji_head_rotate_left">Поверните голову влево</string>
+    <string name="face_emoji_head_rotate_right">Поверните голову вправо</string>
 </resources>

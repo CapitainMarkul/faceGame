@@ -1,6 +1,6 @@
-package ru.tzhack.facegame.facetraking.mlkit
+package ru.tzhack.facegame.facetraking.mlkit.listener
 
-interface MlKitListener {
+interface MlKitHeroListener {
 
     /**
      * Метод вызывается, когда игрок наклоняет голову влево/вправо,

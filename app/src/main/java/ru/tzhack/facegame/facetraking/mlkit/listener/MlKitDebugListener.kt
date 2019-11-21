@@ -1,4 +1,4 @@
-package ru.tzhack.facegame.facetraking.mlkit
+package ru.tzhack.facegame.facetraking.mlkit.listener
 
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
 

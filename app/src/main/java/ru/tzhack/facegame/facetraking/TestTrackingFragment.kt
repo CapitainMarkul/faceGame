@@ -10,37 +10,36 @@ import androidx.fragment.app.Fragment
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour
 import ru.tzhack.facegame.R
-import ru.tzhack.facegame.databinding.FragmentTrackingBinding
-import ru.tzhack.facegame.facetraking.mlkit.MlKitDebugListener
+import ru.tzhack.facegame.data.model.FaceEmoji
+import ru.tzhack.facegame.databinding.FragmentTestTrackingBinding
 import ru.tzhack.facegame.facetraking.mlkit.MlKitEngine
-import ru.tzhack.facegame.facetraking.mlkit.MlKitListener
+import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitDebugListener
+import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitEmojiListener
+import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitHeroListener
 import ru.tzhack.facegame.facetraking.util.heroHorizontalAnim
-import ru.tzhack.facegame.facetraking.util.maxHeadZ
-import ru.tzhack.facegame.facetraking.util.minHeadZ
-import ru.tzhack.facegame.facetraking.util.speedMultiply
 
 
-class TrackingFragment : Fragment() {
+class TestTrackingFragment : Fragment() {
 
     companion object {
-        val TAG: String = TrackingFragment::class.java.simpleName
+        val TAG: String = TestTrackingFragment::class.java.simpleName
 
         fun createFragment() =
-            TrackingFragment().apply {
+            TestTrackingFragment().apply {
                 arguments = Bundle().apply { }
             }
     }
 
-    private lateinit var binding: FragmentTrackingBinding
+    private lateinit var binding: FragmentTestTrackingBinding
 
-    private val mlKitListener = object : MlKitListener {
+    private val mlKitHeroListener = object : MlKitHeroListener {
         override fun onHeroHorizontalAnim(headEulerAngleZ: Float) {
             /* Работаем с наклоном головы | Ось Z */
             animRedSquare(headEulerAngleZ)
         }
 
         override fun onHeroSpeedAnim(speedValue: Float) {
-            //TODO:
+            //TODO: Не реализовано, требует доработок
         }
 
         override fun onHeroSuperPowerAnim() {
@@ -48,11 +47,11 @@ class TrackingFragment : Fragment() {
         }
 
         override fun onHeroRightEyeAnim() {
-            //TODO:
+            //TODO: Здесь можно перемещать главного героя вправо на определенную константу
         }
 
         override fun onHeroLeftEyeAnim() {
-            //TODO:
+            //TODO: Здесь можно перемещать главного героя влево на определенную константу
         }
 
         override fun onError(exception: Exception) {
@@ -60,40 +59,43 @@ class TrackingFragment : Fragment() {
         }
     }
 
+    private val mlKitEmojiListener = object : MlKitEmojiListener {
+        override fun onEmojiObtained(emoji: FaceEmoji) {
+            //TODO:
+        }
+    }
+
     private val mlKitDebugListener = object : MlKitDebugListener {
         override fun onDebugInfo(face: FirebaseVisionFace?) {
-            face?.let {printContourOnFace(it) }
+            face?.let { printContourOnFace(it) }
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_tracking, container, false)
+        return inflater.inflate(R.layout.fragment_test_tracking, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = DataBindingUtil.bind(view)
-            ?: throw IllegalStateException("ViewDataBinding is null for ${TrackingFragment::class.java.canonicalName}")
+            ?: throw IllegalStateException("ViewDataBinding is null for ${TestTrackingFragment::class.java.canonicalName}")
 
         with(binding.cameraView) {
-            setLifecycleOwner(this@TrackingFragment)
-            addFrameProcessor { frame -> MlKitEngine.extractDataFromFrame(frame, mlKitListener, mlKitDebugListener) }
+            setLifecycleOwner(this@TestTrackingFragment)
+            addFrameProcessor { frame ->
+                MlKitEngine.extractDataFromFrame(
+                    frame = frame,
+                    listenerHero = mlKitHeroListener,
+                    listenerEmoji = mlKitEmojiListener,
+                    debugListener = mlKitDebugListener
+                )
+            }
         }
     }
 
     private fun animRedSquare(headEulerAngleZ: Float) {
         binding.txtHero.heroHorizontalAnim(headEulerAngleZ)
-
-        /* FIXME: for Debug */
-        binding.txtHeroAngle.heroHorizontalAnim(headEulerAngleZ)
-        val angleValue = when {
-            headEulerAngleZ < minHeadZ -> minHeadZ
-            headEulerAngleZ > maxHeadZ -> maxHeadZ
-            else                       -> headEulerAngleZ
-        } / maxHeadZ * speedMultiply
-
-        binding.txtHeroAngle.text = "$angleValue"
     }
 
     private fun printContourOnFace(face: FirebaseVisionFace) {

@@ -32,6 +32,7 @@
 
             <ru.tzhack.facegame.facetraking.view.FaceContourRender
                 android:id="@+id/face_overlay_view"
+                android:scaleX="-1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/emoji_anim"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:background="@color/colorPrimary"/>
+
+            <FrameLayout
+                android:id="@+id/done_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0"
+                android:background="@color/doneOverlayColor">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="30dp"
+                    android:src="@drawable/ic_done_24dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="30dp"
+                    android:text="Correct!"
+                    android:textColor="@android:color/white"
+                    android:textSize="36sp"/>
+
+            </FrameLayout>
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/txt_emoji_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"/>
+
+        <FrameLayout
+            android:layout_width="@dimen/camera_view_width"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1">
+
+            <com.otaliastudios.cameraview.CameraView
+                android:id="@+id/camera_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cameraAudio="off"
+                app:cameraAudioBitRate="0"
+                app:cameraFacing="front"
+                app:cameraFlash="off"
+                app:cameraHdr="off"
+                app:cameraVideoCodec="deviceDefault"
+                app:cameraWhiteBalance="auto"/>
+
+            <ru.tzhack.facegame.facetraking.view.FaceContourRender
+                android:id="@+id/face_overlay_view"
+                android:scaleX="-1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</layout>

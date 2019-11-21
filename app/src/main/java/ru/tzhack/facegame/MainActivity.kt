@@ -18,5 +18,9 @@ class MainActivity : AppCompatActivity() {
 //            .replace(R.id.fragment_container, NearbyFragment.createFragment(), NearbyFragment.TAG)
 //            .commit()
 
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.fragment_container, FaceTrackingFragment.createFragment(), FaceTrackingFragment.TAG)
+//            .commit()
+
     }
 }

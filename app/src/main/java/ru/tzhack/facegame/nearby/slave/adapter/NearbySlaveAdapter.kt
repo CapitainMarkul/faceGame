@@ -1,0 +1,73 @@
+package ru.tzhack.facegame.nearby.slave.adapter
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.RecyclerView
+import ru.tzhack.facegame.R
+import ru.tzhack.facegame.common.adapter.ViewDataBindingHolder
+import ru.tzhack.facegame.data.model.NearbyPlayer
+import ru.tzhack.facegame.databinding.ItemPlayerNearbyBinding
+
+class NearbySlaveAdapter(private val listener: OnPlayerClickListener) : RecyclerView.Adapter<NearbySlaveAdapter.ViewHolder>() {
+
+    interface OnPlayerClickListener {
+        fun onPlayerClick(player: NearbyPlayer)
+    }
+
+    private val playerList = mutableListOf<NearbyPlayer>()
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder.create(parent)
+    override fun getItemCount(): Int = playerList.size
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val playerItem = playerList[position]
+
+        holder.dataBinding.root.setOnClickListener { listener.onPlayerClick(playerItem) }
+        holder.bind(playerItem)
+    }
+
+    fun setItems(players: List<NearbyPlayer>) {
+        playerList.clear()
+        playerList.addAll(players)
+        notifyDataSetChanged()
+    }
+
+    fun addItem(player: NearbyPlayer) {
+        playerList.add(player)
+        notifyDataSetChanged()
+    }
+
+    fun updateItemConnected(playerEndPointId: String) {
+        playerList.find { it.playerEndPoint == playerEndPointId }?.connectSuccess = true
+        notifyDataSetChanged()
+    }
+
+    fun removeItem(playerEndPointId: String) {
+        playerList.first { it.playerEndPoint == playerEndPointId }.let {
+            playerList.remove(it)
+            notifyDataSetChanged()
+        }
+    }
+
+    fun removeAllItems() {
+        playerList.clear()
+        notifyDataSetChanged()
+    }
+
+    class ViewHolder(view: View) :
+        ViewDataBindingHolder<ItemPlayerNearbyBinding>(DataBindingUtil.bind(view)!!) {
+
+        companion object {
+            fun create(parent: ViewGroup) = ViewHolder(
+                LayoutInflater.from(parent.context).inflate(R.layout.item_player_nearby, parent, false)
+            )
+        }
+
+        fun bind(player: NearbyPlayer) {
+            dataBinding.viewModel = player
+            dataBinding.executePendingBindings()
+        }
+    }
+}

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="nickName"
+            type="String"/>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_start_host"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Запуск сервера"/>
+
+            <ProgressBar
+                android:id="@+id/progress_host"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/btn_stop_host"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Остановка сервера"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_my_nickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/default_padding"
+            android:paddingEnd="@dimen/default_padding"
+            android:text="@{nickName}"
+            android:textColor="@color/colorAccent"
+            android:textSize="20sp"
+            tools:text="My Nickname"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_nearby_players"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:itemCount="4"
+            tools:listitem="@layout/item_player_nearby"/>
+
+        <Button
+            android:id="@+id/btn_start_game"
+            android:layout_width="200dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Начать игру"
+            android:background="@color/colorPrimaryDark"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</layout>

@@ -11,7 +11,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "ru.tzhack.facegame"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -24,6 +24,10 @@ android {
         }
     }
 
+    defaultConfig {
+        buildConfigField "String", "NEARBY_SERVICE_ID", '"ru.tzhack.facegame"'
+    }
+
     dataBinding {
         enabled true
     }
@@ -33,6 +37,17 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
+
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-rc02'
+
+    //MaterialDialog
+    implementation 'com.afollestad.material-dialogs:core:3.1.1'
+
+    //RecyclerView
+    implementation "androidx.recyclerview:recyclerview:1.0.0"
+
+    //Nearby
+    implementation 'com.google.android.gms:play-services-nearby:17.0.0'
 
     //Firebase
     implementation 'com.google.firebase:firebase-ml-vision:24.0.0'

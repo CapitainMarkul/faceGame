@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Face Game</string>
+
+    <string name="btn_host_game">Стать хостом</string>
+    <string name="btn_search_game">Начать поиск</string>
+
+    <string name="player_nickname_hint">Nickname</string>
+</resources>

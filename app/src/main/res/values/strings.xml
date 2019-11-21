@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Face Game</string>
+
+    <string name="btn_host_game">Start Host</string>
+    <string name="btn_search_game">Start Search</string>
+
+    <string name="player_nickname_hint">Nickname</string>
 </resources>

@@ -16,6 +16,7 @@ import ru.tzhack.facegame.facetraking.mlkit.MlKitEngine
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitDebugListener
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitEmojiListener
 import ru.tzhack.facegame.facetraking.util.fadeInOutAnim
+import ru.tzhack.facegame.facetraking.util.fadeOutInAnim
 import kotlin.random.Random
 
 class FaceTrackingFragment : Fragment() {
@@ -85,6 +86,7 @@ class FaceTrackingFragment : Fragment() {
     private fun doneEmoji() {
         lockEmojiProcess()
         binding.doneOverlay.fadeInOutAnim { updateEmojiOnScreen() }
+        binding.txtEmojiDescription.fadeOutInAnim()
     }
 
     private fun updateEmojiOnScreen() {

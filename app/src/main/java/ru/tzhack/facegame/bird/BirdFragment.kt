@@ -1,5 +1,6 @@
 package ru.tzhack.facegame.bird
 
+import android.content.Context
 import android.graphics.Point
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +8,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.google.firebase.ml.vision.face.FirebaseVisionFace
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour
 import kotlinx.android.synthetic.main.fragment_bird.*
 import ru.tzhack.facegame.R
 import ru.tzhack.facegame.facetraking.TestTrackingFragment
 import ru.tzhack.facegame.facetraking.mlkit.MlKitEngine
+import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitDebugListener
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitHeroListener
 import kotlin.math.absoluteValue
+
+interface GameOverListener {
+    fun onGameOver()
+}
 
 class BirdFragment : Fragment() {
 
@@ -26,6 +34,7 @@ class BirdFragment : Fragment() {
     }
 
     private var game: Game? = null
+    private var gameOverListener: GameOverListener? = null
 
     private val mlKitHeroListener = object : MlKitHeroListener {
         override fun onHeroHorizontalAnim(headEulerAngleZ: Float) {
@@ -66,6 +75,12 @@ class BirdFragment : Fragment() {
         }
     }
 
+    private val mlKitDebugListener = object : MlKitDebugListener {
+        override fun onDebugInfo(face: FirebaseVisionFace?) {
+            face?.let { printContourOnFace(it) }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_bird, container, false)
     }
@@ -78,7 +93,8 @@ class BirdFragment : Fragment() {
             addFrameProcessor { frame ->
                 MlKitEngine.extractDataFromFrame(
                     frame = frame,
-                    listenerHero = mlKitHeroListener
+                    listenerHero = mlKitHeroListener,
+                    debugListener = mlKitDebugListener
                 )
             }
         }
@@ -92,8 +108,7 @@ class BirdFragment : Fragment() {
                 .setTitle("Game over")
                 .setPositiveButton(
                     "Ok"
-                ) { _, _ ->
-                }
+                ) { _, _ -> gameOverListener?.onGameOver() }
                 .create()
                 .show()
         }
@@ -112,5 +127,21 @@ class BirdFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         game = null
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        when (context) {
+            is GameOverListener -> gameOverListener = context
+        }
+    }
+
+    private fun printContourOnFace(face: FirebaseVisionFace) {
+        face_overlay_view?.run {
+            updateContour(
+                face.boundingBox,
+                listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
+            )
+        }
     }
 }

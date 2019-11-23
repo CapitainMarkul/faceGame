@@ -41,6 +41,20 @@ fun View.fadeInOutAnim(actionAfterFadeOut: () -> Unit) {
     fadeInAnim.start()
 }
 
+fun View.fadeOutInAnim() {
+    val animDuration = 400L
+    val fadeInAnim = ValueAnimator.ofFloat(1F, 0F).apply {
+        duration = animDuration
+        addUpdateListener { value -> alpha = value.animatedValue as Float }
+        interpolator = LinearInterpolator()
+
+        repeatCount = 1
+        repeatMode = ValueAnimator.REVERSE
+    }
+
+    fadeInAnim.start()
+}
+
 /*** Anim */
 private fun View.translationTo(coordinateX: Float) {
     ViewCompat.animate(this)

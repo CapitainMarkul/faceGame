@@ -15,78 +15,75 @@ import ru.tzhack.facegame.facetraking.util.*
 const val maxHeadZ = 25F
 const val minHeadZ = maxHeadZ * -1
 
-class MlKitEngine {
+object MlKitEngine {
 
-    companion object {
+    private var faceDetector: FirebaseVisionFaceDetector? = null
 
-        private var faceDetector: FirebaseVisionFaceDetector? = null
+    fun initMlKit() {
+        // face classification and landmark detection
+        val options = FirebaseVisionFaceDetectorOptions.Builder()
+            .setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST)
+            .setContourMode(FirebaseVisionFaceDetectorOptions.ALL_CONTOURS)
+            .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
+            .setMinFaceSize(0.9F)
+            .build()
 
-        fun initMlKit() {
-            // face classification and landmark detection
-            val options = FirebaseVisionFaceDetectorOptions.Builder()
-                .setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST)
-                .setContourMode(FirebaseVisionFaceDetectorOptions.ALL_CONTOURS)
-                .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
-                .setMinFaceSize(0.9F)
-                .build()
+        faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(options)
+    }
 
-            faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(options)
-        }
+    fun extractDataFromFrame(
+        frame: Frame,
+        listenerHero: MlKitHeroListener? = null,
+        listenerEmoji: MlKitEmojiListener? = null,
+        debugListener: MlKitDebugListener? = null
+    ) {
+        getFaceDetector().detectInImage(frame.getVisionImageFromFrame())
+            .addOnSuccessListener { faces ->
+                if (faces.isNotEmpty()) {
+                    // Работаем только с одним лицом
+                    val face = faces.first()
 
-        fun extractDataFromFrame(
-            frame: Frame,
-            listenerHero: MlKitHeroListener? = null,
-            listenerEmoji: MlKitEmojiListener? = null,
-            debugListener: MlKitDebugListener? = null
-        ) {
-            getFaceDetector().detectInImage(frame.getVisionImageFromFrame())
-                .addOnSuccessListener { faces ->
-                    if (faces.isNotEmpty()) {
-                        // Работаем только с одним лицом
-                        val face = faces.first()
+                    // Защита от ситуации, когда точки не были получены
+                    if (face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points.isNotEmpty()) {
+                        listenerHero?.let { calculateHeroActions(face, it) }
+                        listenerEmoji?.let { calculateEmojiActions(face, it) }
 
-                        // Защита от ситуации, когда точки не были получены
-                        if (face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points.isNotEmpty()) {
-                            listenerHero?.let { calculateHeroActions(face, it) }
-                            listenerEmoji?.let { calculateEmojiActions(face, it) }
-
-                            //Debug Info
-                            debugListener?.onDebugInfo(face)
-                        }
+                        //Debug Info
+                        debugListener?.onDebugInfo(face)
                     }
                 }
-                .addOnFailureListener { listenerHero?.onError(it) }
-        }
-
-        private fun calculateHeroActions(face: FirebaseVisionFace, listener: MlKitHeroListener) {
-            listener.onHeroHorizontalAnim(face.headEulerAngleZ)
-            //onHeroSpeedAnim(face.headEulerAngleZ)
-            if (face.checkSmileOnFaceAvailable()) listener.onHeroSuperPowerAnim()
-            if (face.checkRightEyeCloseOnFaceAvailable()) listener.onHeroRightEyeAnim()
-            if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onHeroLeftEyeAnim()
-        }
-
-        private fun calculateEmojiActions(face: FirebaseVisionFace, listener: MlKitEmojiListener) {
-            // Наклоны головы
-            if (face.headEulerAngleZ >= maxHeadZ) listener.onEmojiObtained(FaceEmoji.HEAD_BIAS_RIGHT)
-            else if (face.headEulerAngleZ <= minHeadZ) listener.onEmojiObtained(FaceEmoji.HEAD_BIAS_LEFT)
-
-            // Подмигивания
-            if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.LEFT_EYE_CLOSE)
-            if (face.checkRightEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.RIGHT_EYE_CLOSE)
-
-            // Улыбка
-            if (face.checkSmileOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.SMILE)
-
-            // Открыт рот
-            if (face.checkOpenMouthOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.MOUTH_OPEN)
-
-            // Повороты головы
-            if (face.checkHeadLeftRotateAvailable()) listener.onEmojiObtained(FaceEmoji.HEAD_ROTATE_LEFT)
-            else if (face.checkHeadRightRotateAvailable()) listener.onEmojiObtained(FaceEmoji.HEAD_ROTATE_RIGHT)
-        }
-
-        private fun getFaceDetector(): FirebaseVisionFaceDetector = faceDetector
-            ?: throw Exception("MlKit is not configured! Call first 'initMlKit()' method.")
+            }
+            .addOnFailureListener { listenerHero?.onError(it) }
     }
+
+    private fun calculateHeroActions(face: FirebaseVisionFace, listener: MlKitHeroListener) {
+        listener.onHeroHorizontalAnim(face.headEulerAngleZ)
+        //onHeroSpeedAnim(face.headEulerAngleZ)
+        if (face.checkSmileOnFaceAvailable()) listener.onHeroSuperPowerAnim()
+        if (face.checkRightEyeCloseOnFaceAvailable()) listener.onHeroRightEyeAnim()
+        if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onHeroLeftEyeAnim()
+    }
+
+    private fun calculateEmojiActions(face: FirebaseVisionFace, listener: MlKitEmojiListener) {
+        // Наклоны головы
+        if (face.headEulerAngleZ >= maxHeadZ) listener.onEmojiObtained(FaceEmoji.HEAD_BIAS_RIGHT)
+        else if (face.headEulerAngleZ <= minHeadZ) listener.onEmojiObtained(FaceEmoji.HEAD_BIAS_LEFT)
+
+        // Подмигивания
+        if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.LEFT_EYE_CLOSE)
+        if (face.checkRightEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.RIGHT_EYE_CLOSE)
+
+        // Улыбка
+        if (face.checkSmileOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.SMILE)
+
+        // Открыт рот
+        if (face.checkOpenMouthOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.MOUTH_OPEN)
+
+        // Повороты головы
+        if (face.checkHeadLeftRotateAvailable()) listener.onEmojiObtained(FaceEmoji.HEAD_ROTATE_LEFT)
+        else if (face.checkHeadRightRotateAvailable()) listener.onEmojiObtained(FaceEmoji.HEAD_ROTATE_RIGHT)
+    }
+
+    private fun getFaceDetector(): FirebaseVisionFaceDetector = faceDetector
+        ?: throw Exception("MlKit is not configured! Call first 'initMlKit()' method.")
 }

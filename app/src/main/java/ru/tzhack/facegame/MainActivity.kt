@@ -2,6 +2,7 @@ package ru.tzhack.facegame
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import ru.tzhack.facegame.bird.BirdFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -9,6 +10,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, BirdFragment.createFragment(), BirdFragment.TAG)
+            .commit()
 
 //        supportFragmentManager.beginTransaction()
 //            .replace(R.id.fragment_container, TrackingFragment.createFragment(), TrackingFragment.TAG)

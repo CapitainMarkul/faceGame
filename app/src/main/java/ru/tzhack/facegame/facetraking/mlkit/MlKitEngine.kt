@@ -19,13 +19,15 @@ object MlKitEngine {
 
     private var faceDetector: FirebaseVisionFaceDetector? = null
 
+    private var analyzing = false
+
     fun initMlKit() {
         // face classification and landmark detection
         val options = FirebaseVisionFaceDetectorOptions.Builder()
             .setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST)
             .setContourMode(FirebaseVisionFaceDetectorOptions.ALL_CONTOURS)
             .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
-            .setMinFaceSize(0.9F)
+//            .setMinFaceSize(0.5F)
             .build()
 
         faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(options)
@@ -37,6 +39,9 @@ object MlKitEngine {
         listenerEmoji: MlKitEmojiListener? = null,
         debugListener: MlKitDebugListener? = null
     ) {
+        if (analyzing) return
+        analyzing = true
+
         getFaceDetector().detectInImage(frame.getVisionImageFromFrame())
             .addOnSuccessListener { faces ->
                 if (faces.isNotEmpty()) {
@@ -52,11 +57,17 @@ object MlKitEngine {
                         debugListener?.onDebugInfo(face)
                     }
                 }
+
+                analyzing = false
             }
-            .addOnFailureListener { listenerHero?.onError(it) }
+            .addOnFailureListener {
+                listenerHero?.onError(it)
+                analyzing = false
+            }
     }
 
-    private fun calculateHeroActions(face: FirebaseVisionFace, listener: MlKitHeroListener) {
+    //FIXME: must be Private !!!!!!!!!!!!!!
+    fun calculateHeroActions(face: FirebaseVisionFace, listener: MlKitHeroListener) {
         listener.onHeroHorizontalAnim(face.headEulerAngleZ)
         //onHeroSpeedAnim(face.headEulerAngleZ)
         if (face.checkSmileOnFaceAvailable()) listener.onHeroSuperPowerAnim()
@@ -64,14 +75,18 @@ object MlKitEngine {
         if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onHeroLeftEyeAnim()
     }
 
-    private fun calculateEmojiActions(face: FirebaseVisionFace, listener: MlKitEmojiListener) {
+    //FIXME: must be Private !!!!!!!!!!!!!!
+    fun calculateEmojiActions(face: FirebaseVisionFace, listener: MlKitEmojiListener) {
         // Наклоны головы
         if (face.headEulerAngleZ >= maxHeadZ) listener.onEmojiObtained(FaceEmoji.HEAD_BIAS_RIGHT)
         else if (face.headEulerAngleZ <= minHeadZ) listener.onEmojiObtained(FaceEmoji.HEAD_BIAS_LEFT)
 
         // Подмигивания
-        if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.LEFT_EYE_CLOSE)
-        if (face.checkRightEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.RIGHT_EYE_CLOSE)
+        if(face.checkDoubleEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.DOUBLE_EYE_CLOSE)
+        else {
+            if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.LEFT_EYE_CLOSE)
+            if (face.checkRightEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.RIGHT_EYE_CLOSE)
+        }
 
         // Улыбка
         if (face.checkSmileOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.SMILE)

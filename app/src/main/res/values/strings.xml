@@ -7,6 +7,7 @@
     <string name="player_nickname_hint">Nickname</string>
 
     <!--    TODO: translate to English -->
+    <string name="face_emoji_double_eye_close">Зажмуртесь</string>
     <string name="face_emoji_left_eye_close">Подмигните левым глазом</string>
     <string name="face_emoji_right_eye_close">Подмигните правым глазом</string>
     <string name="face_emoji_smile">Улыбнитесь :)</string>

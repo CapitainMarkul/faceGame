@@ -4,79 +4,57 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.content.ContextCompat
-import com.google.firebase.ml.vision.common.FirebaseVisionPoint
 
 /* TODO: Требует доработок */
 class FaceContourRender @JvmOverloads constructor(
     context: Context,
-    private val attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = -1
 ) : View(context, attrs, defStyleAttr) {
 
-    private val dotSize = 3f
-
-    private val paintWhite = Paint().apply {
-        color = ContextCompat.getColor(context, android.R.color.white)
+    private val pointPaint = Paint().apply {
+        color = Color.WHITE
+//        style = Paint.Style.FILL
     }
 
-    private val paintRoot = Paint().apply {
-        color = ContextCompat.getColor(context, android.R.color.holo_red_dark)
-    }
-
-    private val paintRoot2 = Paint().apply {
-        color = ContextCompat.getColor(context, android.R.color.holo_green_dark)
-    }
-
-    private val paintBox = Paint().apply {
-        color = ContextCompat.getColor(context, android.R.color.holo_blue_light)
-        style = Paint.Style.STROKE
-    }
-
-    private val faceLandmark = mutableListOf<FirebaseVisionPoint>()
-    private val faceContour = mutableListOf<List<FirebaseVisionPoint>>()
-
-    private var rect = Rect()
-
-    private var widthScaleFactor = 1.0F
-    private var heightScaleFactor = 1.0F
-
-    fun updateContour(faceRect: Rect?, points: List<List<FirebaseVisionPoint>>) {
-        faceRect?.let {
-            rect = it.apply { set(left, top, right, bottom) }
+    var points = listOf<PointF>()
+        set(value) {
+            field = value
+            transformPoints()
         }
 
-        faceContour.clear()
-        faceContour.addAll(points)
+    var transform = Matrix()
+        set(value) {
+            field = value
+            transformPoints()
+        }
 
-        invalidate()
-    }
+    private var drawingPoints = listOf<PointF>()
+        set(value) {
+            field = value
+            invalidate()
+        }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        if (this.width != 0 && this.height != 0) {
-            widthScaleFactor = (canvas.width / this.width).toFloat()
-            heightScaleFactor = (canvas.height / this.height).toFloat()
-
-            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-
-            faceLandmark.forEach {
-                canvas.drawCircle(it.x, it.y, dotSize, paintRoot)
+        canvas.apply {
+            for (point in drawingPoints) {
+                drawCircle(point.x, point.y, 3f, pointPaint)
             }
-
-            faceContour.forEachIndexed { index, contour ->
-                contour.forEach { point ->
-                    canvas.drawCircle(
-                        point.x,
-                        point.y,
-                        dotSize,
-                        paintWhite
-                    )
-                }
-            }
-
-            canvas.drawRect(rect, paintBox)
         }
+    }
+
+    private fun transformPoints() {
+        // build src and dst
+        val transformInput = points.flatMap { listOf(it.x, it.y) }.toFloatArray()
+        val transformOutput = FloatArray(transformInput.size)
+
+        // apply the matrix transformation
+        transform.mapPoints(transformOutput, transformInput)
+
+        // convert transformed FloatArray to List<Point>
+        drawingPoints = transformOutput.asList()
+            .chunked(size = 2, transform = { (x, y) -> PointF(x, y) })
     }
 }

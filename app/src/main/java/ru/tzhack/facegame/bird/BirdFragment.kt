@@ -9,10 +9,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour
 import kotlinx.android.synthetic.main.fragment_bird.*
 import ru.tzhack.facegame.R
-import ru.tzhack.facegame.facetraking.TestTrackingFragment
 import ru.tzhack.facegame.facetraking.mlkit.MlKitEngine
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitDebugListener
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitHeroListener
@@ -25,7 +23,7 @@ interface GameOverListener {
 class BirdFragment : Fragment() {
 
     companion object {
-        val TAG: String = TestTrackingFragment::class.java.simpleName
+        val TAG: String = BirdFragment::class.java.simpleName
 
         fun createFragment(): Fragment = BirdFragment()
 
@@ -77,7 +75,7 @@ class BirdFragment : Fragment() {
 
     private val mlKitDebugListener = object : MlKitDebugListener {
         override fun onDebugInfo(face: FirebaseVisionFace?) {
-            face?.let { printContourOnFace(it) }
+//            face?.let { printContourOnFace(it) }
         }
     }
 
@@ -105,9 +103,9 @@ class BirdFragment : Fragment() {
         game_container.addView(game)
         game!!.endGameListener = {
             AlertDialog.Builder(requireContext())
-                .setTitle("Game over")
+                .setTitle("Bonus Level")
                 .setPositiveButton(
-                    "Ok"
+                    "Start"
                 ) { _, _ -> gameOverListener?.onGameOver() }
                 .create()
                 .show()
@@ -133,15 +131,6 @@ class BirdFragment : Fragment() {
         super.onAttach(context)
         when (context) {
             is GameOverListener -> gameOverListener = context
-        }
-    }
-
-    private fun printContourOnFace(face: FirebaseVisionFace) {
-        face_overlay_view?.run {
-            updateContour(
-                face.boundingBox,
-                listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
-            )
         }
     }
 }

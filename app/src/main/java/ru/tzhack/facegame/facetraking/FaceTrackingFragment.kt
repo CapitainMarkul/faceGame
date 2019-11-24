@@ -1,22 +1,23 @@
 package ru.tzhack.facegame.facetraking
 
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.util.Rational
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.camera.core.CameraX
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour
 import ru.tzhack.facegame.R
 import ru.tzhack.facegame.data.model.FaceEmoji
 import ru.tzhack.facegame.databinding.FragmentFaceTrackingBinding
-import ru.tzhack.facegame.facetraking.mlkit.MlKitEngine
-import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitDebugListener
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitEmojiListener
 import ru.tzhack.facegame.facetraking.util.fadeInOutAnim
 import ru.tzhack.facegame.facetraking.util.fadeOutInAnim
+import ru.tzhack.facegame.facetraking.view.AutoFitPreviewAnalysis
 import kotlin.random.Random
 
 class FaceTrackingFragment : Fragment() {
@@ -35,12 +36,13 @@ class FaceTrackingFragment : Fragment() {
     private lateinit var currentEmoji: FaceEmoji
 
     private val emojiList = listOf(
+        FaceEmoji.DOUBLE_EYE_CLOSE,
         FaceEmoji.LEFT_EYE_CLOSE,
         FaceEmoji.RIGHT_EYE_CLOSE,
         FaceEmoji.SMILE,
+        FaceEmoji.MOUTH_OPEN,
         FaceEmoji.HEAD_BIAS_LEFT,
         FaceEmoji.HEAD_BIAS_RIGHT,
-        FaceEmoji.MOUTH_OPEN,
         FaceEmoji.HEAD_ROTATE_LEFT,
         FaceEmoji.HEAD_ROTATE_RIGHT
     )
@@ -50,12 +52,6 @@ class FaceTrackingFragment : Fragment() {
     private val mlKitEmojiListener = object : MlKitEmojiListener {
         override fun onEmojiObtained(emoji: FaceEmoji) {
             if (!lockEmojiProcess && currentEmoji == emoji) doneEmoji()
-        }
-    }
-
-    private val mlKitDebugListener = object : MlKitDebugListener {
-        override fun onDebugInfo(face: FirebaseVisionFace?) {
-            face?.let { printContourOnFace(it) }
         }
     }
 
@@ -72,15 +68,39 @@ class FaceTrackingFragment : Fragment() {
         updateEmojiOnScreen()
 
         with(binding.cameraView) {
-            setLifecycleOwner(this@FaceTrackingFragment)
-            addFrameProcessor { frame ->
-                MlKitEngine.extractDataFromFrame(
-                    frame = frame,
-                    listenerEmoji = mlKitEmojiListener,
-                    debugListener = mlKitDebugListener
-                )
+            post {
+                if (width > height) {
+                    val newWidth = (height * 0.75).toInt() // 9/16
+                    layoutParams = layoutParams.apply {
+                        width = newWidth
+                    }
+                    requestLayout()
+
+                    binding.faceOverlayView.layoutParams = binding.faceOverlayView.layoutParams.apply {
+                        width = newWidth
+                    }
+                    binding.faceOverlayView.requestLayout()
+                }
+
+                setUpCameraX()
             }
         }
+    }
+
+    private fun setUpCameraX() {
+        CameraX.unbindAll()
+
+        val displayMetrics = DisplayMetrics().also { binding.cameraView.display.getRealMetrics(it) }
+        val screenSize = android.util.Size(displayMetrics.widthPixels, displayMetrics.heightPixels)
+        val aspectRatio = Rational(displayMetrics.widthPixels, displayMetrics.heightPixels)
+        val rotation = binding.cameraView.display.rotation
+
+        val autoFitPreviewAnalysis = AutoFitPreviewAnalysis.build(
+            screenSize, aspectRatio, rotation, binding.cameraView, binding.faceOverlayView,
+            mlKitEmojiListener = mlKitEmojiListener
+        )
+
+        CameraX.bindToLifecycle(this, autoFitPreviewAnalysis.previewUseCase, autoFitPreviewAnalysis.analysisUseCase)
     }
 
     private fun doneEmoji() {
@@ -112,9 +132,9 @@ class FaceTrackingFragment : Fragment() {
     private fun randNextEmoji(): FaceEmoji = emojiList[Random.Default.nextInt(emojiList.size)]
 
     private fun printContourOnFace(face: FirebaseVisionFace) {
-        binding.faceOverlayView.updateContour(
-            face.boundingBox,
-            listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
-        )
+//        binding.faceOverlayView.updateContour(
+//            face.boundingBox,
+//            listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
+//        )
     }
 }

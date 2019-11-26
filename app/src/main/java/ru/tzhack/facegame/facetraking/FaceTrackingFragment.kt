@@ -11,13 +11,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour
+import com.otaliastudios.cameraview.size.Size
+import com.otaliastudios.cameraview.size.SizeSelector
 import ru.tzhack.facegame.R
 import ru.tzhack.facegame.data.model.FaceEmoji
 import ru.tzhack.facegame.databinding.FragmentFaceTrackingBinding
+import ru.tzhack.facegame.facetraking.mlkit.MlKitEngine
+import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitDebugListener
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitEmojiListener
 import ru.tzhack.facegame.facetraking.util.fadeInOutAnim
 import ru.tzhack.facegame.facetraking.util.fadeOutInAnim
-import ru.tzhack.facegame.facetraking.view.AutoFitPreviewAnalysis
 import kotlin.random.Random
 
 class FaceTrackingFragment : Fragment() {
@@ -55,6 +59,13 @@ class FaceTrackingFragment : Fragment() {
         }
     }
 
+    private val mlKitDebugListener = object : MlKitDebugListener {
+        override fun onDebugInfo(face: FirebaseVisionFace?) {
+            face?.let { printContourOnFace(it) }
+        }
+    }
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_face_tracking, container, false)
     }
@@ -67,40 +78,84 @@ class FaceTrackingFragment : Fragment() {
 
         updateEmojiOnScreen()
 
-        with(binding.cameraView) {
+        binding.cameraView.run {
+            setLifecycleOwner(this@FaceTrackingFragment)
             post {
-                if (width > height) {
-                    val newWidth = (height * 0.75).toInt() // 9/16
-                    layoutParams = layoutParams.apply {
-                        width = newWidth
-                    }
-                    requestLayout()
-
-                    binding.faceOverlayView.layoutParams = binding.faceOverlayView.layoutParams.apply {
-                        width = newWidth
-                    }
-                    binding.faceOverlayView.requestLayout()
+                //                if (width > height) {
+//                    val newWidth = (height * 0.75).toInt() // 9/16
+//                    layoutParams = layoutParams.apply {
+//                        width = newWidth
+//                    }
+//                    requestLayout()
+//
+//                    binding.faceOverlayView.layoutParams = binding.faceOverlayView.layoutParams.apply {
+//                        width = newWidth
+//                    }
+//                    binding.faceOverlayView.requestLayout()
+//                } else if (width.toDouble() / height.toDouble() != 0.75) {
+//                    val newHeight = (width * 1.25).toInt() // 9/16
+//                    layoutParams = layoutParams.apply {
+//                        height = newHeight
+//                    }
+//
+//                    requestLayout()
+//
+//                    binding.faceOverlayView.layoutParams = binding.faceOverlayView.layoutParams.apply {
+//                        width = newHeight
+//                    }
+//                    binding.faceOverlayView.requestLayout()
+//                }
+                this.setSnapshotMaxHeight(480)
+                this.setSnapshotMaxWidth(360)
+//                this.setVideoSize(object : SizeSelector {
+//                    override fun select(source: MutableList<Size>): MutableList<Size> {
+//
+//                    }
+//                })
+                addFrameProcessor { frame ->
+                    MlKitEngine.extractDataFromFrame(
+                        frame = frame,
+                        listenerEmoji = mlKitEmojiListener,
+                        debugListener = mlKitDebugListener
+                    )
                 }
-
-                setUpCameraX()
             }
         }
+
+//        with(binding.cameraView) {
+//            post {
+//                if (width > height) {
+//                    val newWidth = (height * 0.75).toInt() // 9/16
+//                    layoutParams = layoutParams.apply {
+//                        width = newWidth
+//                    }
+//                    requestLayout()
+//
+//                    binding.faceOverlayView.layoutParams = binding.faceOverlayView.layoutParams.apply {
+//                        width = newWidth
+//                    }
+//                    binding.faceOverlayView.requestLayout()
+//                }
+//
+//                setUpCameraX()
+//            }
+//        }
     }
 
     private fun setUpCameraX() {
         CameraX.unbindAll()
 
-        val displayMetrics = DisplayMetrics().also { binding.cameraView.display.getRealMetrics(it) }
-        val screenSize = android.util.Size(displayMetrics.widthPixels, displayMetrics.heightPixels)
-        val aspectRatio = Rational(displayMetrics.widthPixels, displayMetrics.heightPixels)
-        val rotation = binding.cameraView.display.rotation
+//        val displayMetrics = DisplayMetrics().also { binding.cameraView.display.getRealMetrics(it) }
+//        val screenSize = android.util.Size(displayMetrics.widthPixels, displayMetrics.heightPixels)
+//        val aspectRatio = Rational(displayMetrics.widthPixels, displayMetrics.heightPixels)
+//        val rotation = binding.cameraView.display.rotation
+//
+//        val autoFitPreviewAnalysis = AutoFitPreviewAnalysis.build(
+//            screenSize, aspectRatio, rotation, binding.cameraView, binding.faceOverlayView,
+//            mlKitEmojiListener = mlKitEmojiListener
+//        )
 
-        val autoFitPreviewAnalysis = AutoFitPreviewAnalysis.build(
-            screenSize, aspectRatio, rotation, binding.cameraView, binding.faceOverlayView,
-            mlKitEmojiListener = mlKitEmojiListener
-        )
-
-        CameraX.bindToLifecycle(this, autoFitPreviewAnalysis.previewUseCase, autoFitPreviewAnalysis.analysisUseCase)
+//        CameraX.bindToLifecycle(this, autoFitPreviewAnalysis.previewUseCase, autoFitPreviewAnalysis.analysisUseCase)
     }
 
     private fun doneEmoji() {
@@ -132,9 +187,9 @@ class FaceTrackingFragment : Fragment() {
     private fun randNextEmoji(): FaceEmoji = emojiList[Random.Default.nextInt(emojiList.size)]
 
     private fun printContourOnFace(face: FirebaseVisionFace) {
-//        binding.faceOverlayView.updateContour(
-//            face.boundingBox,
-//            listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
-//        )
+        binding.faceOverlayView.updateContour(
+            face.boundingBox,
+            listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
+        )
     }
 }

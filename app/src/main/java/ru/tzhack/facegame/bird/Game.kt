@@ -40,7 +40,7 @@ class Game(
     private var canvas: Canvas = Canvas()
     private val paint: Paint = Paint()
 
-    private val wallsSize = 1
+    private val wallsSize = 8
     private val player: Player = Player(context, size.x.toFloat())
     private val walls: List<Wall> = Wall.generate(context, size.x.toFloat(), wallsSize)
 

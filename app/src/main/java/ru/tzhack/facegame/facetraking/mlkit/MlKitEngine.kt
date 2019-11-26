@@ -19,7 +19,7 @@ object MlKitEngine {
 
     private var faceDetector: FirebaseVisionFaceDetector? = null
 
-    private var analyzing = false
+//    private var analyzing = false
 
     fun initMlKit() {
         // face classification and landmark detection
@@ -27,7 +27,7 @@ object MlKitEngine {
             .setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST)
             .setContourMode(FirebaseVisionFaceDetectorOptions.ALL_CONTOURS)
             .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
-//            .setMinFaceSize(0.5F)
+            .setMinFaceSize(0.9F)
             .build()
 
         faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(options)
@@ -39,8 +39,8 @@ object MlKitEngine {
         listenerEmoji: MlKitEmojiListener? = null,
         debugListener: MlKitDebugListener? = null
     ) {
-        if (analyzing) return
-        analyzing = true
+//        if (analyzing) return
+//        analyzing = true
 
         getFaceDetector().detectInImage(frame.getVisionImageFromFrame())
             .addOnSuccessListener { faces ->
@@ -58,16 +58,16 @@ object MlKitEngine {
                     }
                 }
 
-                analyzing = false
+//                analyzing = false
             }
             .addOnFailureListener {
                 listenerHero?.onError(it)
-                analyzing = false
+//                analyzing = false
             }
     }
 
     //FIXME: must be Private !!!!!!!!!!!!!!
-    fun calculateHeroActions(face: FirebaseVisionFace, listener: MlKitHeroListener) {
+    private fun calculateHeroActions(face: FirebaseVisionFace, listener: MlKitHeroListener) {
         listener.onHeroHorizontalAnim(face.headEulerAngleZ)
         //onHeroSpeedAnim(face.headEulerAngleZ)
         if (face.checkSmileOnFaceAvailable()) listener.onHeroSuperPowerAnim()
@@ -76,7 +76,7 @@ object MlKitEngine {
     }
 
     //FIXME: must be Private !!!!!!!!!!!!!!
-    fun calculateEmojiActions(face: FirebaseVisionFace, listener: MlKitEmojiListener) {
+    private fun calculateEmojiActions(face: FirebaseVisionFace, listener: MlKitEmojiListener) {
         // Наклоны головы
         if (face.headEulerAngleZ >= maxHeadZ) listener.onEmojiObtained(FaceEmoji.HEAD_BIAS_RIGHT)
         else if (face.headEulerAngleZ <= minHeadZ) listener.onEmojiObtained(FaceEmoji.HEAD_BIAS_LEFT)

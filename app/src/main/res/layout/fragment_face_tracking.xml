@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white">
-
         <ImageView
             android:id="@+id/emoji_anim"
             android:layout_width="0dp"
@@ -58,6 +57,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:paddingStart="12dp"
+            android:visibility="gone"
             android:paddingEnd="12dp"
             android:textColor="@android:color/black"
             android:textSize="24sp"
@@ -65,32 +65,40 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/horizontal_guideline"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txt_emoji_description">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextureView
+            <com.otaliastudios.cameraview.CameraView
                 android:id="@+id/camera_view"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cameraAudio="off"
+                app:cameraAudioBitRate="0"
+                app:cameraFacing="front"
+                app:cameraFlash="off"
+                app:cameraHdr="off"
+                app:cameraVideoSizeMinWidth="360"
+                app:cameraVideoSizeMinHeight="480"
+                app:cameraVideoSizeMaxWidth="360"
+                app:cameraVideoSizeMaxHeight="480"
+                app:cameraVideoSizeAspectRatio="1:1"
+                app:cameraVideoSizeSmallest="true"
+                app:cameraVideoCodec="deviceDefault"
+                app:cameraWhiteBalance="auto"/>
 
             <ru.tzhack.facegame.facetraking.view.FaceContourRender
                 android:id="@+id/face_overlay_view"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="@+id/camera_view"
-                app:layout_constraintEnd_toEndOf="@+id/camera_view"
-                app:layout_constraintStart_toStartOf="@+id/camera_view"
-                app:layout_constraintTop_toTopOf="@+id/camera_view"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleX="-1"/>
+
+        </FrameLayout>
 
         <!-- Guidelines -->
         <androidx.constraintlayout.widget.Guideline
@@ -98,7 +106,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.35"/>
+            app:layout_constraintGuide_percent="0.0"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

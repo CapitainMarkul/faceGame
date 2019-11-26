@@ -21,14 +21,14 @@ class MainActivity : AppCompatActivity(), GameOverListener {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (hasCameraPermissions()) {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, BirdFragment.createFragment(), BirdFragment.TAG)
+                    .replace(R.id.fragment_container, FaceTrackingFragment.createFragment(), FaceTrackingFragment.TAG)
                     .commit()
             } else {
                 requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
             }
         } else {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, BirdFragment.createFragment(), BirdFragment.TAG)
+                .replace(R.id.fragment_container, FaceTrackingFragment.createFragment(), FaceTrackingFragment.TAG)
                 .commit()
         }
 
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(), GameOverListener {
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, BirdFragment.createFragment(), BirdFragment.TAG)
+                    .replace(R.id.fragment_container, FaceTrackingFragment.createFragment(), FaceTrackingFragment.TAG)
                     .commit()
             }
         }

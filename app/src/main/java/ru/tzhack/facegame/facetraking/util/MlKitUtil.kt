@@ -49,7 +49,7 @@ fun FirebaseVisionFace.checkHeadRightRotateAvailable(): Boolean {
     val leftBorder = boundingBox.left /* Берем наоборот, т.к. работаем с зеркальным изображением */
 
     val resultDelta = noseCenter - leftBorder
-            Log.e("TAG", "$resultDelta")
+//            Log.e("TAG", "$resultDelta")
     return resultDelta < correctHeadRightRotateDelta
 }
 

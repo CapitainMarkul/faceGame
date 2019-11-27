@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
+import com.otaliastudios.cameraview.size.Size
 import kotlinx.android.synthetic.main.fragment_bird.*
 import ru.tzhack.facegame.R
 import ru.tzhack.facegame.facetraking.mlkit.MlKitEngine
@@ -74,7 +75,7 @@ class BirdFragment : Fragment() {
     }
 
     private val mlKitDebugListener = object : MlKitDebugListener {
-        override fun onDebugInfo(face: FirebaseVisionFace?) {
+        override fun onDebugInfo(frameSize: Size, face: FirebaseVisionFace?) {
 //            face?.let { printContourOnFace(it) }
         }
     }

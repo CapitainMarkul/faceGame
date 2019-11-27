@@ -1,8 +1,6 @@
 package ru.tzhack.facegame.facetraking
 
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Rational
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour
 import com.otaliastudios.cameraview.size.Size
-import com.otaliastudios.cameraview.size.SizeSelector
 import ru.tzhack.facegame.R
 import ru.tzhack.facegame.data.model.FaceEmoji
 import ru.tzhack.facegame.databinding.FragmentFaceTrackingBinding
@@ -30,9 +27,9 @@ class FaceTrackingFragment : Fragment() {
         val TAG: String = FaceTrackingFragment::class.java.simpleName
 
         fun createFragment() =
-            FaceTrackingFragment().apply {
-                arguments = Bundle().apply { }
-            }
+                FaceTrackingFragment().apply {
+                    arguments = Bundle().apply { }
+                }
     }
 
     private lateinit var binding: FragmentFaceTrackingBinding
@@ -40,15 +37,15 @@ class FaceTrackingFragment : Fragment() {
     private lateinit var currentEmoji: FaceEmoji
 
     private val emojiList = listOf(
-        FaceEmoji.DOUBLE_EYE_CLOSE,
-        FaceEmoji.LEFT_EYE_CLOSE,
-        FaceEmoji.RIGHT_EYE_CLOSE,
-        FaceEmoji.SMILE,
-        FaceEmoji.MOUTH_OPEN,
-        FaceEmoji.HEAD_BIAS_LEFT,
-        FaceEmoji.HEAD_BIAS_RIGHT,
-        FaceEmoji.HEAD_ROTATE_LEFT,
-        FaceEmoji.HEAD_ROTATE_RIGHT
+            FaceEmoji.DOUBLE_EYE_CLOSE,
+            FaceEmoji.LEFT_EYE_CLOSE,
+            FaceEmoji.RIGHT_EYE_CLOSE,
+            FaceEmoji.SMILE,
+            FaceEmoji.MOUTH_OPEN,
+            FaceEmoji.HEAD_BIAS_LEFT,
+            FaceEmoji.HEAD_BIAS_RIGHT,
+            FaceEmoji.HEAD_ROTATE_LEFT,
+            FaceEmoji.HEAD_ROTATE_RIGHT
     )
 
     private var lockEmojiProcess = false
@@ -60,8 +57,8 @@ class FaceTrackingFragment : Fragment() {
     }
 
     private val mlKitDebugListener = object : MlKitDebugListener {
-        override fun onDebugInfo(face: FirebaseVisionFace?) {
-            face?.let { printContourOnFace(it) }
+        override fun onDebugInfo(frameSize: Size, face: FirebaseVisionFace?) {
+            face?.let { printContourOnFace(frameSize, it) }
         }
     }
 
@@ -74,72 +71,34 @@ class FaceTrackingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding = DataBindingUtil.bind(view)
-            ?: throw IllegalStateException("ViewDataBinding is null for ${FaceTrackingFragment::class.java.canonicalName}")
+                ?: throw IllegalStateException("ViewDataBinding is null for ${FaceTrackingFragment::class.java.canonicalName}")
 
         updateEmojiOnScreen()
 
+        var first = true
         binding.cameraView.run {
             setLifecycleOwner(this@FaceTrackingFragment)
-            post {
-                //                if (width > height) {
-//                    val newWidth = (height * 0.75).toInt() // 9/16
-//                    layoutParams = layoutParams.apply {
-//                        width = newWidth
-//                    }
-//                    requestLayout()
-//
-//                    binding.faceOverlayView.layoutParams = binding.faceOverlayView.layoutParams.apply {
-//                        width = newWidth
-//                    }
-//                    binding.faceOverlayView.requestLayout()
-//                } else if (width.toDouble() / height.toDouble() != 0.75) {
-//                    val newHeight = (width * 1.25).toInt() // 9/16
-//                    layoutParams = layoutParams.apply {
-//                        height = newHeight
-//                    }
-//
-//                    requestLayout()
-//
-//                    binding.faceOverlayView.layoutParams = binding.faceOverlayView.layoutParams.apply {
-//                        width = newHeight
-//                    }
-//                    binding.faceOverlayView.requestLayout()
-//                }
-                this.setSnapshotMaxHeight(480)
-                this.setSnapshotMaxWidth(360)
-//                this.setVideoSize(object : SizeSelector {
-//                    override fun select(source: MutableList<Size>): MutableList<Size> {
-//
-//                    }
-//                })
-                addFrameProcessor { frame ->
-                    MlKitEngine.extractDataFromFrame(
+            addFrameProcessor { frame ->
+
+                if(first && frame.size.height != 0 && frame.size.width != 0) {
+                    binding.faceOverlayView.run {
+                        layoutParams = layoutParams.apply {
+                            width = frame.size.height
+                            height = frame.size.width
+                        }
+                        requestLayout()
+                    }
+                    first = false
+                }
+
+                MlKitEngine.extractDataFromFrame(
                         frame = frame,
                         listenerEmoji = mlKitEmojiListener,
                         debugListener = mlKitDebugListener
-                    )
-                }
+                )
             }
         }
 
-//        with(binding.cameraView) {
-//            post {
-//                if (width > height) {
-//                    val newWidth = (height * 0.75).toInt() // 9/16
-//                    layoutParams = layoutParams.apply {
-//                        width = newWidth
-//                    }
-//                    requestLayout()
-//
-//                    binding.faceOverlayView.layoutParams = binding.faceOverlayView.layoutParams.apply {
-//                        width = newWidth
-//                    }
-//                    binding.faceOverlayView.requestLayout()
-//                }
-//
-//                setUpCameraX()
-//            }
-//        }
     }
 
     private fun setUpCameraX() {
@@ -169,9 +128,9 @@ class FaceTrackingFragment : Fragment() {
 
         binding.txtEmojiDescription.setText(currentEmoji.resDescription)
         Glide.with(binding.emojiAnim)
-            .asGif()
-            .load(currentEmoji.resAnim)
-            .into(binding.emojiAnim)
+                .asGif()
+                .load(currentEmoji.resAnim)
+                .into(binding.emojiAnim)
 
         unlockEmojiProcess()
     }
@@ -186,10 +145,12 @@ class FaceTrackingFragment : Fragment() {
 
     private fun randNextEmoji(): FaceEmoji = emojiList[Random.Default.nextInt(emojiList.size)]
 
-    private fun printContourOnFace(face: FirebaseVisionFace) {
+    private fun printContourOnFace(frameSize: Size, face: FirebaseVisionFace) {
+        val invertFrameSize = Size(frameSize.height, frameSize.width)
         binding.faceOverlayView.updateContour(
-            face.boundingBox,
-            listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
+                invertFrameSize,
+                face.boundingBox,
+                listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
         )
     }
 }

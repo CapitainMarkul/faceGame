@@ -1,15 +1,16 @@
 package ru.tzhack.facegame.facetraking.util
 
-import android.util.Log
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour.*
 
 private const val correctSmileProbabilityPercent = 0.75F
-private const val correctCloseEyeProbabilityPercent = 0.15F
+private const val correctCloseEyeProbabilityPercent = 0.20F
 private const val correctMouthOpenDelta = 80F
 
-private const val correctHeadLeftRotateDelta = 180F
-private const val correctHeadRightRotateDelta = 220F
+private const val correctHeadLeftRotateDelta = 70F
+private const val correctHeadRightRotateDelta = 70F
+
+private const val correctEyeBrownMoveDelta = 6F
 
 // For Help:
 // https://firebase.google.com/docs/ml-kit/images/examples/face_contours.svg
@@ -33,9 +34,10 @@ fun FirebaseVisionFace.checkHeadLeftRotateAvailable(): Boolean {
     val noseCenterPointIndex = 1
     val noseCenter = getContour(NOSE_BRIDGE).points[noseCenterPointIndex].x
 
-    val rightBorder = boundingBox.right /* Берем наоборот, т.к. работаем с зеркальным изображением */
+    val faceCenterLeftPointIndex = 9
+    val faceLeft = getContour(FACE).points[faceCenterLeftPointIndex].x
 
-    val resultDelta = rightBorder - noseCenter
+    val resultDelta = faceLeft - noseCenter
     return resultDelta < correctHeadLeftRotateDelta
 }
 
@@ -46,10 +48,10 @@ fun FirebaseVisionFace.checkHeadRightRotateAvailable(): Boolean {
     val noseCenterPointIndex = 1
     val noseCenter = getContour(NOSE_BRIDGE).points[noseCenterPointIndex].x
 
-    val leftBorder = boundingBox.left /* Берем наоборот, т.к. работаем с зеркальным изображением */
+    val faceCenterRightPointIndex = 27
+    val faceRight = getContour(FACE).points[faceCenterRightPointIndex].x
 
-    val resultDelta = noseCenter - leftBorder
-//            Log.e("TAG", "$resultDelta")
+    val resultDelta = noseCenter - faceRight
     return resultDelta < correctHeadRightRotateDelta
 }
 
@@ -57,22 +59,58 @@ fun FirebaseVisionFace.checkHeadRightRotateAvailable(): Boolean {
  * Метод для проверки наличия улыбки на лице игрока.
  * */
 fun FirebaseVisionFace.checkSmileOnFaceAvailable(): Boolean =
-    smilingProbability > correctSmileProbabilityPercent
+        smilingProbability > correctSmileProbabilityPercent
 
 /**
  * Метод для проверки подмигивания правым глазом.
  * */
 fun FirebaseVisionFace.checkRightEyeCloseOnFaceAvailable(): Boolean =
-    leftEyeOpenProbability < correctCloseEyeProbabilityPercent
+        leftEyeOpenProbability < correctCloseEyeProbabilityPercent
 
 /**
  * Метод для проверки подмигивания левым глазом.
  * */
 fun FirebaseVisionFace.checkLeftEyeCloseOnFaceAvailable(): Boolean =
-    rightEyeOpenProbability < correctCloseEyeProbabilityPercent
+        rightEyeOpenProbability < correctCloseEyeProbabilityPercent
 
 /**
  * Метод для проверки подмигивания обоими глазами.
  * */
 fun FirebaseVisionFace.checkDoubleEyeCloseOnFaceAvailable(): Boolean =
-    checkRightEyeCloseOnFaceAvailable() && checkLeftEyeCloseOnFaceAvailable()
+        checkRightEyeCloseOnFaceAvailable() && checkLeftEyeCloseOnFaceAvailable()
+
+/**
+ * Метод для проверки вижения левой брови на лице игрока.
+ * */
+//fun FirebaseVisionFace.checkLeftEyeBrownMoveOnFaceAvailable(): Boolean {
+//    val eyeBrownCenterPointIndex = 2
+//    val eyeBrownCenter = getContour(LEFT_EYEBROW_TOP).points[eyeBrownCenterPointIndex].y
+//
+//    val faceCenterRightPointIndex = 33
+//    val faceRight = getContour(FACE).points[faceCenterRightPointIndex].y
+//
+//    val resultDelta = eyeBrownCenter - faceRight
+//    Log.e("TAG", "Right: $resultDelta")
+//    return resultDelta < correctEyeBrownMoveDelta
+//}
+
+/**
+ * Метод для проверки вижения правой брови на лице игрока.
+ * */
+//fun FirebaseVisionFace.checkRightEyeBrownMoveOnFaceAvailable(): Boolean {
+//    val eyeBrownCenterPointIndex = 2
+//    val eyeBrownCenter = getContour(LEFT_EYEBROW_TOP).points[eyeBrownCenterPointIndex].y
+//
+//    val faceCenterRightPointIndex = 33
+//    val faceRight = getContour(FACE).points[faceCenterRightPointIndex].y
+//
+//    val resultDelta = eyeBrownCenter - faceRight
+//    Log.e("TAG", "Right: $resultDelta")
+//    return resultDelta < correctEyeBrownMoveDelta
+//}
+
+/**
+ * Метод для проверки вижения обеих бровей на лице игрока.
+ * */
+//fun FirebaseVisionFace.checkDoubleEyeBrownMoveOnFaceAvailable(): Boolean =
+//        checkLeftEyeBrownMoveOnFaceAvailable() || checkRightEyeBrownMoveOnFaceAvailable()

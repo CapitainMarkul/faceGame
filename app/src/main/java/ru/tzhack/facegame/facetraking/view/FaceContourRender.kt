@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.ml.vision.common.FirebaseVisionPoint
 import com.otaliastudios.cameraview.size.Size
 
-/* TODO: Требует доработок */
 class FaceContourRender @JvmOverloads constructor(
         context: Context,
         private val attrs: AttributeSet? = null,
@@ -22,7 +21,7 @@ class FaceContourRender @JvmOverloads constructor(
     }
 
     private val paintBox = Paint().apply {
-        color = ContextCompat.getColor(context, android.R.color.holo_blue_light)
+        color = ContextCompat.getColor(context, android.R.color.holo_green_light)
         style = Paint.Style.STROKE
     }
 

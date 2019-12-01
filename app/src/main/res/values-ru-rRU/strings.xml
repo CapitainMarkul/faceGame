@@ -17,4 +17,14 @@
 
     <string name="face_emoji_head_rotate_left">Поверните голову влево</string>
     <string name="face_emoji_head_rotate_right">Поверните голову вправо</string>
+
+    <string name="face_emoji_left_eyebrown_move">Подвигайте левой бровью</string>
+    <string name="face_emoji_right_eyebrown_move">Подвигайте правой бровью</string>
+    <string name="face_emoji_double_eyebrown_move">Подвигайте обеими бровями</string>
+    <string name="face_emoji_correct">Верно!</string>
+    <string name="server_start">Запуск сервера</string>
+    <string name="stop_server">Остановка сервера</string>
+    <string name="start_game">Начать игру</string>
+    <string name="stop_discovering">Остановить поиск</string>
+    <string name="start_discovering">Начать поиск</string>
 </resources>

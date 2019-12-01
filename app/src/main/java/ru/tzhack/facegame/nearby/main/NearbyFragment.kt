@@ -12,6 +12,8 @@ import ru.tzhack.facegame.databinding.FragmentNearbyMainBinding
 import ru.tzhack.facegame.nearby.host.NearbyHostFragment
 import ru.tzhack.facegame.nearby.slave.NearbySlaveFragment
 
+
+
 class NearbyFragment : Fragment(), ViewModelStoreOwner {
 
     companion object {

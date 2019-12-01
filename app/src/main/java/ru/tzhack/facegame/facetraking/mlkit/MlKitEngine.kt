@@ -11,6 +11,7 @@ import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitDebugListener
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitEmojiListener
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitHeroListener
 import ru.tzhack.facegame.facetraking.util.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 const val maxHeadZ = 25F
 const val minHeadZ = maxHeadZ * -1
@@ -19,7 +20,7 @@ object MlKitEngine {
 
     private var faceDetector: FirebaseVisionFaceDetector? = null
 
-//    private var analyzing = false
+    private var analyzing = AtomicBoolean(false)
 
     fun initMlKit() {
         // face classification and landmark detection
@@ -39,8 +40,9 @@ object MlKitEngine {
             listenerEmoji: MlKitEmojiListener? = null,
             debugListener: MlKitDebugListener? = null
     ) {
-//        if (analyzing) return
-//        analyzing = true
+        if (analyzing.get()) return
+        analyzing.set(true)
+
         val frameSize = frame.size
         getFaceDetector().detectInImage(frame.getVisionImageFromFrame())
                 .addOnSuccessListener { faces ->
@@ -58,15 +60,15 @@ object MlKitEngine {
                         }
                     }
 
-//                analyzing = false
+                    analyzing.set(false)
                 }
                 .addOnFailureListener {
                     listenerHero?.onError(it)
-//                analyzing = false
+
+                    analyzing.set(false)
                 }
     }
 
-    //FIXME: must be Private !!!!!!!!!!!!!!
     private fun calculateHeroActions(face: FirebaseVisionFace, listener: MlKitHeroListener) {
         listener.onHeroHorizontalAnim(face.headEulerAngleZ)
         //onHeroSpeedAnim(face.headEulerAngleZ)
@@ -75,7 +77,6 @@ object MlKitEngine {
         if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onHeroLeftEyeAnim()
     }
 
-    //FIXME: must be Private !!!!!!!!!!!!!!
     private fun calculateEmojiActions(face: FirebaseVisionFace, listener: MlKitEmojiListener) {
         // Наклоны головы
         if (face.headEulerAngleZ >= maxHeadZ) listener.onEmojiObtained(FaceEmoji.HEAD_BIAS_RIGHT)
@@ -88,11 +89,18 @@ object MlKitEngine {
             if (face.checkRightEyeCloseOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.RIGHT_EYE_CLOSE)
         }
 
+        // Движения бровями
+//        if (face.checkDoubleEyeBrownMoveOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.DOUBLE_EYEBROWN_MOVE)
+//        else {
+//            if (face.checkLeftEyeBrownMoveOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.LEFT_EYEBROWN_MOVE)
+//            if (face.checkRightEyeBrownMoveOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.RIGHT_EYEBROWN_MOVE)
+//        }
+
         // Улыбка
         if (face.checkSmileOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.SMILE)
 
         // Открыт рот
-        if (face.checkOpenMouthOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.MOUTH_OPEN)
+//        if (face.checkOpenMouthOnFaceAvailable()) listener.onEmojiObtained(FaceEmoji.MOUTH_OPEN)
 
         // Повороты головы
         if (face.checkHeadLeftRotateAvailable()) listener.onEmojiObtained(FaceEmoji.HEAD_ROTATE_LEFT)

@@ -1,20 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="nickName"
-            type="String"/>
+            type="String" />
 
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
         android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_my_nickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingStart="@dimen/default_padding"
+            android:paddingEnd="@dimen/default_padding"
+            android:text="@{nickName}"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="26sp"
+            tools:text="My Nickname" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorDivider" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_nearby_players"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            tools:itemCount="4"
+            tools:listitem="@layout/item_player_nearby" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorDivider" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,41 +57,22 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Начать поиск"/>
+                android:text="@string/start_discovering" />
 
             <ProgressBar
                 android:id="@+id/progress_slave"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btn_stop_slave"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Остановить поиск"/>
+                android:text="@string/stop_discovering" />
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/txt_my_nickname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/default_padding"
-            android:paddingEnd="@dimen/default_padding"
-            android:text="@{nickName}"
-            android:textColor="@color/colorAccent"
-            android:textSize="20sp"
-            tools:text="My Nickname"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_nearby_players"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            tools:itemCount="4"
-            tools:listitem="@layout/item_player_nearby"/>
 
     </LinearLayout>
 

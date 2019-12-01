@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.camera.core.CameraX
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -40,10 +39,17 @@ class FaceTrackingFragment : Fragment() {
             FaceEmoji.DOUBLE_EYE_CLOSE,
             FaceEmoji.LEFT_EYE_CLOSE,
             FaceEmoji.RIGHT_EYE_CLOSE,
+
+//            FaceEmoji.DOUBLE_EYEBROWN_MOVE,
+//            FaceEmoji.RIGHT_EYEBROWN_MOVE,
+//            FaceEmoji.LEFT_EYEBROWN_MOVE,
+
             FaceEmoji.SMILE,
-            FaceEmoji.MOUTH_OPEN,
+//            FaceEmoji.MOUTH_OPEN,
+
             FaceEmoji.HEAD_BIAS_LEFT,
             FaceEmoji.HEAD_BIAS_RIGHT,
+
             FaceEmoji.HEAD_ROTATE_LEFT,
             FaceEmoji.HEAD_ROTATE_RIGHT
     )
@@ -99,22 +105,6 @@ class FaceTrackingFragment : Fragment() {
             }
         }
 
-    }
-
-    private fun setUpCameraX() {
-        CameraX.unbindAll()
-
-//        val displayMetrics = DisplayMetrics().also { binding.cameraView.display.getRealMetrics(it) }
-//        val screenSize = android.util.Size(displayMetrics.widthPixels, displayMetrics.heightPixels)
-//        val aspectRatio = Rational(displayMetrics.widthPixels, displayMetrics.heightPixels)
-//        val rotation = binding.cameraView.display.rotation
-//
-//        val autoFitPreviewAnalysis = AutoFitPreviewAnalysis.build(
-//            screenSize, aspectRatio, rotation, binding.cameraView, binding.faceOverlayView,
-//            mlKitEmojiListener = mlKitEmojiListener
-//        )
-
-//        CameraX.bindToLifecycle(this, autoFitPreviewAnalysis.previewUseCase, autoFitPreviewAnalysis.analysisUseCase)
     }
 
     private fun doneEmoji() {

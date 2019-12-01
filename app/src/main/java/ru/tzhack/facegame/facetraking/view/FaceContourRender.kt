@@ -21,14 +21,6 @@ class FaceContourRender @JvmOverloads constructor(
         color = ContextCompat.getColor(context, android.R.color.white)
     }
 
-    private val paintRoot = Paint().apply {
-        color = ContextCompat.getColor(context, android.R.color.holo_red_dark)
-    }
-
-    private val paintRoot2 = Paint().apply {
-        color = ContextCompat.getColor(context, android.R.color.holo_green_dark)
-    }
-
     private val paintBox = Paint().apply {
         color = ContextCompat.getColor(context, android.R.color.holo_blue_light)
         style = Paint.Style.STROKE
@@ -41,39 +33,15 @@ class FaceContourRender @JvmOverloads constructor(
     private var widthScaleFactor = 1.0F
     private var heightScaleFactor = 1.0F
 
-    private var translateX = 0.0F
-    private var translateY = 0.0F
-
-    //960.0 / 1280.0 + 0.5 = 1.25
     fun updateContour(frameSize: Size, faceRect: Rect?, points: List<List<FirebaseVisionPoint>>) {
         frameSize.let {
-            heightScaleFactor = if(it.height > height) {
-                (height.toFloat() / it.height.toFloat())/* * 0.75F*/
-            } else if(it.height < height && it.width != width) {
-                (it.width.toFloat() / it.height.toFloat()) + 0.5F
-            } else {
-                1.0F
-            }
-
-            widthScaleFactor = if(it.width > width) {
-                (width.toFloat() / it.width.toFloat())/* * 0.75F*/
-            } else if (it.width < width && it.height != height) {
-                (it.width.toFloat() / it.height.toFloat()) + 0.5F
-            } /*else if(it.width == width && it.height > height) {
-//                (height.toFloat() / it.height.toFloat())
-            }*/ else {
-                1.0F
-            }
+            widthScaleFactor = width.toFloat() / it.width.toFloat()
+            heightScaleFactor = height.toFloat() / it.height.toFloat()
         }
 
         faceRect?.let {
             rect = it.apply {
-                set(
-                        (left * widthScaleFactor + translateX).toInt(),
-                        (top * heightScaleFactor + translateY).toInt(),
-                        (right * widthScaleFactor + translateX).toInt(),
-                        (bottom * heightScaleFactor + translateY).toInt()
-                )
+                set(left.translateX(), top.translateY(), right.translateX(), bottom.translateY())
             }
         }
 
@@ -92,8 +60,8 @@ class FaceContourRender @JvmOverloads constructor(
             faceContour.forEachIndexed { index, contour ->
                 contour.forEach { point ->
                     canvas.drawCircle(
-                            point.x * widthScaleFactor + translateX,
-                            point.y * heightScaleFactor + translateY,
+                            point.x.translateX(),
+                            point.y.translateY(),
                             dotSize,
                             paintWhite
                     )
@@ -103,4 +71,12 @@ class FaceContourRender @JvmOverloads constructor(
             canvas.drawRect(rect, paintBox)
         }
     }
+
+    private fun Float.translateX(): Float = width - scaleX()
+    private fun Float.scaleX(): Float = this * widthScaleFactor
+    private fun Float.translateY(): Float = this * heightScaleFactor
+
+    private fun Int.translateX(): Int = width - scaleX()
+    private fun Int.scaleX(): Int = (this * widthScaleFactor).toInt()
+    private fun Int.translateY(): Int = (this * heightScaleFactor).toInt()
 }

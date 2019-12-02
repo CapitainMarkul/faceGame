@@ -1,6 +1,6 @@
 package ru.tzhack.facegame.bird
 
-class Position(
+data class Position(
     var left: Float,
     var top: Float,
     val width: Float,
@@ -13,7 +13,11 @@ class Position(
     val bottom: Float
         get() = top - height
 
-    fun contains(pos: Position, allowedY: Float): Boolean {
-        return pos.right >= left && pos.left < right && pos.top - allowedY > bottom && pos.bottom + allowedY < top
+    fun contains(pos: Position, allowed: Float = 0f): Boolean {
+        return pos.right - allowed >= left && pos.left + allowed < right && pos.top - allowed > bottom && pos.bottom + allowed < top
+    }
+
+    fun containsY(pos: Position, allowedY: Float = 0f): Boolean {
+        return pos.top - allowedY > bottom && pos.bottom + allowedY < top
     }
 }

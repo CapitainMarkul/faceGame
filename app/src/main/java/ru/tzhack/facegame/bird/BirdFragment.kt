@@ -29,13 +29,15 @@ class BirdFragment : Fragment() {
 
     private val mlKitHeroListener = object : MlKitHeroListener {
         override fun onHeroHorizontalAnim(headEulerAngleZ: Float) {
-//            Log.d("onHeroHorizontalAnim", headEulerAngleZ.toString())
             game?.let {
                 val absolute = headEulerAngleZ.absoluteValue
                 if (absolute < angleStopped) {
                     it.setMovementState(Movement.Stopped)
                 } else {
-                    val ratio = absolute / angleMaxSpeed
+                    var ratio = absolute / angleMaxSpeed
+                    if (ratio > 1f) {
+                        ratio = 1f
+                    }
                     if (headEulerAngleZ > 0) {
                         it.setMovementState(Movement.Right(ratio))
                     } else {
@@ -50,15 +52,15 @@ class BirdFragment : Fragment() {
         }
 
         override fun onHeroSuperPowerAnim() {
-
+            game?.pause = false
         }
 
         override fun onHeroRightEyeAnim() {
-
+            game?.shot()
         }
 
         override fun onHeroLeftEyeAnim() {
-
+            game?.shot()
         }
 
         override fun onError(exception: Exception) {
@@ -106,7 +108,7 @@ class BirdFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        game?.pause()
+        game?.stop()
     }
 
     override fun onDestroyView() {

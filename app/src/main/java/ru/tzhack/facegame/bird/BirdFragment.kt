@@ -71,10 +71,14 @@ class BirdFragment : Fragment() {
         }
 
         override fun onHeroRightEyeAnim() {
-            game?.shot()
+
         }
 
         override fun onHeroLeftEyeAnim() {
+
+        }
+
+        override fun onHeroDoubleEyeAnim() {
             game?.shot()
         }
 

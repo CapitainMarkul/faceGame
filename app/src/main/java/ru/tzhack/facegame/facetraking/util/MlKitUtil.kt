@@ -59,25 +59,34 @@ fun FirebaseVisionFace.checkHeadRightRotateAvailable(): Boolean {
  * Метод для проверки наличия улыбки на лице игрока.
  * */
 fun FirebaseVisionFace.checkSmileOnFaceAvailable(): Boolean =
-        smilingProbability > correctSmileProbabilityPercent
+    smilingProbability > correctSmileProbabilityPercent
 
 /**
  * Метод для проверки подмигивания правым глазом.
  * */
 fun FirebaseVisionFace.checkRightEyeCloseOnFaceAvailable(): Boolean =
-        leftEyeOpenProbability < correctCloseEyeProbabilityPercent
+    leftEyeOpenProbability < correctCloseEyeProbabilityPercent
 
 /**
  * Метод для проверки подмигивания левым глазом.
  * */
 fun FirebaseVisionFace.checkLeftEyeCloseOnFaceAvailable(): Boolean =
-        rightEyeOpenProbability < correctCloseEyeProbabilityPercent
+    rightEyeOpenProbability < correctCloseEyeProbabilityPercent
 
 /**
  * Метод для проверки подмигивания обоими глазами.
+ *
+ * (Необходимо исключить моргания)
  * */
-fun FirebaseVisionFace.checkDoubleEyeCloseOnFaceAvailable(): Boolean =
-        checkRightEyeCloseOnFaceAvailable() && checkLeftEyeCloseOnFaceAvailable()
+private var doubleCloseCount = 0
+
+fun FirebaseVisionFace.checkDoubleEyeCloseOnFaceAvailable(): Boolean {
+    val doubleClose = checkRightEyeCloseOnFaceAvailable() && checkLeftEyeCloseOnFaceAvailable()
+    return if (doubleClose && ++doubleCloseCount > 5) {
+        doubleCloseCount = 0
+        true
+    } else false
+}
 
 /**
  * Метод для проверки вижения левой брови на лице игрока.

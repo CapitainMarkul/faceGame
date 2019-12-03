@@ -75,6 +75,8 @@ object MlKitEngine {
         if (face.checkSmileOnFaceAvailable()) listener.onHeroSuperPowerAnim()
         if (face.checkRightEyeCloseOnFaceAvailable()) listener.onHeroRightEyeAnim()
         if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onHeroLeftEyeAnim()
+
+        if (face.checkDoubleEyeCloseOnFaceAvailable()) listener.onHeroDoubleEyeAnim()
     }
 
     private fun calculateEmojiActions(face: FirebaseVisionFace, listener: MlKitEmojiListener) {

@@ -3,7 +3,6 @@ package ru.tzhack.facegame.bird
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
 import android.os.Handler
@@ -11,6 +10,8 @@ import android.os.Looper
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.SurfaceView
+import androidx.core.content.ContextCompat
+import ru.tzhack.facegame.R
 
 sealed class Movement {
     object Stopped : Movement()
@@ -30,25 +31,45 @@ class Game(
 ) : SurfaceView(context),
     Runnable {
 
-    var endGameListener: (() -> Unit)? = null
+    var endGameListener: ((timeOver: Boolean) -> Unit)? = null
 
     private var playing = false
+    var pause = true
     private var thread: Thread? = null
 
-    private val manualInput = true
+    // Отключаем ручное управление
+    private val manualInput = false
 
     private var canvas: Canvas = Canvas()
     private val paint: Paint = Paint()
 
-    private val wallsSize = 1
-    private val player: Player = Player(context, size.x.toFloat())
-    private val walls: List<Wall> = Wall.generate(context, size.x.toFloat(), wallsSize)
+    private val bird: Bird = Bird(context, size.x.toFloat())
+    private val wallsSize = 20
+    private val walls: List<Wall> = Wall.generate(
+        context,
+        screenX = size.x.toFloat(),
+        size = wallsSize
+    )
+    private val finish = Finish(
+        positionY = walls.last().getTop() + (Wall.wallsSpacing * 2),
+        width = size.x.toFloat(),
+        context = context
+    )
+
+    private val bullets = ArrayList<Bullet>()
+    private var lastShotTime = 0L
+    private val bonuses = ArrayList<Bonus>()
+    private val gameToolbar = GameToolbar()
 
     private val viewport = Viewport(size.y.toFloat())
+    private val input = Input(size)
 
-    private val input = Input(size.x)
+    private val backgroundColor = ContextCompat.getColor(context, R.color.colorPrimaryDark)
 
-    private val backgroundColor = Color.rgb(127, 199, 255)
+    init {
+        Bullet.init(context)
+        Bonus.init(context, size)
+    }
 
     fun start() {
         if (!playing) {
@@ -58,16 +79,12 @@ class Game(
         }
     }
 
-    fun pause() {
+    fun stop() {
         if (playing) {
             playing = false
             thread?.join()
             thread = null
         }
-    }
-
-    fun setMovementState(movement: Movement) {
-        player.setMovementState(movement)
     }
 
     override fun run() {
@@ -77,7 +94,10 @@ class Game(
             val deltaTime = (time - lastFrameTime) / 1000f
             lastFrameTime = time
 
-            update(deltaTime)
+            if (!pause) {
+                update(deltaTime)
+            }
+            viewport.setWorldY(bird.getY())
 
             draw()
 
@@ -91,24 +111,52 @@ class Game(
     }
 
     private fun update(dt: Float) {
-        var collision = false
+        var frontWall: Wall? = null
         walls.forEach {
-            if (it.collision(player.position)) {
-                collision = true
+            if (it.isInFront(bird.position)) {
+                frontWall = it
                 return@forEach
             }
         }
 
-        player.crashed = collision
-
-        player.update(dt)
-        viewport.setWorldY(player.getY())
-
-        if (player.position.bottom > walls.last().getTop()) {
-            Handler(Looper.getMainLooper()).post {
-                endGameListener?.invoke()
+        val bonusesIterator = bonuses.iterator()
+        while (bonusesIterator.hasNext()) {
+            val bonus = bonusesIterator.next()
+            if (bonus.collision(bird.position)) {
+                when (bonus.type) {
+                    BonusType.SPEED_UP   -> bird.speedUp()
+                    BonusType.SPEED_DOWN -> bird.speedDown()
+                    //BonusType.SHOT       -> bird.addShot()
+                    BonusType.TIME       -> gameToolbar.addTime()
+                }
+                bonusesIterator.remove()
             }
-            pause()
+        }
+
+        bird.update(dt, frontWall)
+        gameToolbar.update(dt)
+        bonuses.forEach { it.update(dt) }
+
+        val bulletsIterator = bullets.iterator()
+        while (bulletsIterator.hasNext()) {
+            val bullet = bulletsIterator.next()
+            if (bullet.isDistanceOver()) {
+                bulletsIterator.remove()
+            } else {
+                bullet.update(dt)
+            }
+        }
+
+        if (bird.getY() > Bonus.generateWhenPositionY) {
+            bonuses.add(Bonus.generate())
+        }
+
+        val timeOver = gameToolbar.time <= 0F
+        if (finish.position.top < bird.position.top || timeOver) {
+            Handler(Looper.getMainLooper()).post {
+                endGameListener?.invoke(timeOver)
+            }
+            stop()
         }
     }
 
@@ -120,14 +168,36 @@ class Game(
 
                 canvas.drawColor(backgroundColor)
 
-                walls.forEach {
-                    it.draw(canvas, paint, viewport)
-                }
+                walls.forEach { it.draw(canvas, paint, viewport) }
 
-                player.draw(canvas, paint, viewport)
+                finish.onDraw(canvas, paint, viewport)
+
+                bonuses.forEach { it.draw(canvas, paint, viewport) }
+
+                bullets.forEach { it.draw(canvas, paint, viewport) }
+
+                bird.draw(canvas, paint, viewport)
+
+                gameToolbar.draw(canvas, paint)
 
                 holder.unlockCanvasAndPost(canvas)
             }
+        }
+    }
+
+    fun shot() {
+        if (!pause && playing) {
+            if (lastShotTime + Bullet.shotDebounce < SystemClock.uptimeMillis()) {
+                bullets.add(Bullet.create(bird.position))
+                bird.setShotState()
+                lastShotTime = SystemClock.uptimeMillis()
+            }
+        }
+    }
+
+    fun setMovementState(movement: Movement) {
+        if (!pause && playing) {
+            bird.setMovementState(movement)
         }
     }
 
@@ -139,21 +209,22 @@ class Game(
         return true
     }
 
-    internal inner class Input(private val screenWidth: Int) {
+    internal inner class Input(private val screenSize: Point) {
 
         fun handleInput(motionEvent: MotionEvent) {
             val x = motionEvent.getX(0).toInt()
+            val y = motionEvent.getY(0).toInt()
 
             when (motionEvent.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
-                    if (x > screenWidth / 2) {
-                        player.setMovementState(Movement.Right(1f))
-                    } else {
-                        player.setMovementState(Movement.Left(1f))
+                    when {
+                        y < screenSize.y / 2 -> shot()
+                        x > screenSize.x / 2 -> setMovementState(Movement.Right(1f))
+                        else                 -> setMovementState(Movement.Left(1f))
                     }
                 }
                 MotionEvent.ACTION_UP   -> {
-                    player.setMovementState(Movement.Stopped)
+                    bird.setMovementState(Movement.Stopped)
                 }
             }
         }

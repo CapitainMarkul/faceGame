@@ -26,7 +26,7 @@ class Wall(
         private const val minWidth = 100f
         private const val rangeRandomWidth = 600
         private const val spaceSize = 300f
-        private const val wallsSpacing = 300
+        const val wallsSpacing = 300
 
         private const val startY = 1000f
 
@@ -45,7 +45,7 @@ class Wall(
             var y = startY
             for (i in 0 until size) {
                 val leftPos = 0f
-                val leftWidth = minWidth + Random.Default.nextInt(rangeRandomWidth)
+                val leftWidth = minWidth + Random.nextInt(rangeRandomWidth)
 
                 val rightPos = leftPos + leftWidth + spaceSize
                 val rightWidth = screenX - rightPos
@@ -60,6 +60,16 @@ class Wall(
 
             return walls
         }
+    }
+
+    fun isInFront(position: Position): Boolean {
+        if (posLeftTube.containsY(position, 0f) ||
+            posRightTube.containsY(position, 0f)
+        ) {
+            return true
+        }
+
+        return false
     }
 
     fun collision(position: Position): Boolean {

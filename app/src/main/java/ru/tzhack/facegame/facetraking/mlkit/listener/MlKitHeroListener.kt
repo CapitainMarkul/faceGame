@@ -35,6 +35,11 @@ interface MlKitHeroListener {
     fun onHeroLeftEyeAnim()
 
     /**
+     * Метод вызывается, когда игрок зажмуривается.
+     * */
+    fun onHeroDoubleEyeAnim()
+
+    /**
      * Метод для вывода ошибок в работе MlKit.
      *
      * @param exception информация об ошибке.

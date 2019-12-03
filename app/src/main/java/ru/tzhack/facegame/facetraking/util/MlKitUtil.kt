@@ -4,10 +4,13 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFace
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour.*
 
 private const val correctSmileProbabilityPercent = 0.75F
-private const val correctCloseEyeProbabilityPercent = 0.10F
+private const val correctCloseEyeProbabilityPercent = 0.20F
 private const val correctMouthOpenDelta = 80F
 
-private const val correctHeadRotateDelta = 90F
+private const val correctHeadLeftRotateDelta = 70F
+private const val correctHeadRightRotateDelta = 70F
+
+private const val correctEyeBrownMoveDelta = 6F
 
 // For Help:
 // https://firebase.google.com/docs/ml-kit/images/examples/face_contours.svg
@@ -31,10 +34,11 @@ fun FirebaseVisionFace.checkHeadLeftRotateAvailable(): Boolean {
     val noseCenterPointIndex = 1
     val noseCenter = getContour(NOSE_BRIDGE).points[noseCenterPointIndex].x
 
-    val leftBorder = boundingBox.right /* Берем наоборот, т.к. работаем с зеркальным изображением */
+    val faceCenterLeftPointIndex = 9
+    val faceLeft = getContour(FACE).points[faceCenterLeftPointIndex].x
 
-    val resultDelta = leftBorder - noseCenter
-    return resultDelta < correctHeadRotateDelta
+    val resultDelta = faceLeft - noseCenter
+    return resultDelta < correctHeadLeftRotateDelta
 }
 
 /**
@@ -44,10 +48,11 @@ fun FirebaseVisionFace.checkHeadRightRotateAvailable(): Boolean {
     val noseCenterPointIndex = 1
     val noseCenter = getContour(NOSE_BRIDGE).points[noseCenterPointIndex].x
 
-    val leftBorder = boundingBox.left /* Берем наоборот, т.к. работаем с зеркальным изображением */
+    val faceCenterRightPointIndex = 27
+    val faceRight = getContour(FACE).points[faceCenterRightPointIndex].x
 
-    val resultDelta = noseCenter - leftBorder
-    return resultDelta < correctHeadRotateDelta
+    val resultDelta = noseCenter - faceRight
+    return resultDelta < correctHeadRightRotateDelta
 }
 
 /**
@@ -60,10 +65,61 @@ fun FirebaseVisionFace.checkSmileOnFaceAvailable(): Boolean =
  * Метод для проверки подмигивания правым глазом.
  * */
 fun FirebaseVisionFace.checkRightEyeCloseOnFaceAvailable(): Boolean =
-    rightEyeOpenProbability < correctCloseEyeProbabilityPercent
+    leftEyeOpenProbability < correctCloseEyeProbabilityPercent
 
 /**
  * Метод для проверки подмигивания левым глазом.
  * */
 fun FirebaseVisionFace.checkLeftEyeCloseOnFaceAvailable(): Boolean =
-    leftEyeOpenProbability < correctCloseEyeProbabilityPercent
+    rightEyeOpenProbability < correctCloseEyeProbabilityPercent
+
+/**
+ * Метод для проверки подмигивания обоими глазами.
+ *
+ * (Необходимо исключить моргания)
+ * */
+private var doubleCloseCount = 0
+
+fun FirebaseVisionFace.checkDoubleEyeCloseOnFaceAvailable(): Boolean {
+    val doubleClose = checkRightEyeCloseOnFaceAvailable() && checkLeftEyeCloseOnFaceAvailable()
+    return if (doubleClose && ++doubleCloseCount > 5) {
+        doubleCloseCount = 0
+        true
+    } else false
+}
+
+/**
+ * Метод для проверки вижения левой брови на лице игрока.
+ * */
+//fun FirebaseVisionFace.checkLeftEyeBrownMoveOnFaceAvailable(): Boolean {
+//    val eyeBrownCenterPointIndex = 2
+//    val eyeBrownCenter = getContour(LEFT_EYEBROW_TOP).points[eyeBrownCenterPointIndex].y
+//
+//    val faceCenterRightPointIndex = 33
+//    val faceRight = getContour(FACE).points[faceCenterRightPointIndex].y
+//
+//    val resultDelta = eyeBrownCenter - faceRight
+//    Log.e("TAG", "Right: $resultDelta")
+//    return resultDelta < correctEyeBrownMoveDelta
+//}
+
+/**
+ * Метод для проверки вижения правой брови на лице игрока.
+ * */
+//fun FirebaseVisionFace.checkRightEyeBrownMoveOnFaceAvailable(): Boolean {
+//    val eyeBrownCenterPointIndex = 2
+//    val eyeBrownCenter = getContour(LEFT_EYEBROW_TOP).points[eyeBrownCenterPointIndex].y
+//
+//    val faceCenterRightPointIndex = 33
+//    val faceRight = getContour(FACE).points[faceCenterRightPointIndex].y
+//
+//    val resultDelta = eyeBrownCenter - faceRight
+//    Log.e("TAG", "Right: $resultDelta")
+//    return resultDelta < correctEyeBrownMoveDelta
+//}
+
+/**
+ * Метод для проверки вижения обеих бровей на лице игрока.
+ * */
+//fun FirebaseVisionFace.checkDoubleEyeBrownMoveOnFaceAvailable(): Boolean =
+//        checkLeftEyeBrownMoveOnFaceAvailable() || checkRightEyeBrownMoveOnFaceAvailable()

@@ -7,15 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <FrameLayout
-        android:id="@+id/game_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
     <com.otaliastudios.cameraview.CameraView
         android:id="@+id/camera_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="invisible"
         app:cameraAudio="off"
         app:cameraAudioBitRate="0"
         app:cameraFacing="front"
@@ -24,8 +20,13 @@
         app:cameraVideoCodec="deviceDefault"
         app:cameraWhiteBalance="auto"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintHeight_percent="0.3"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.5"/>
+        app:layout_constraintWidth_percent="0.3"/>
+
+    <FrameLayout
+        android:id="@+id/game_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

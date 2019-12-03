@@ -1,9 +1,11 @@
 package ru.tzhack.facegame.facetraking
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -20,38 +22,48 @@ import ru.tzhack.facegame.facetraking.util.fadeInOutAnim
 import ru.tzhack.facegame.facetraking.util.fadeOutInAnim
 import kotlin.random.Random
 
+interface FaceGameOverListener {
+    fun onFaceGameOverPositive()
+    fun onFaceGameOverNegative()
+}
+
 class FaceTrackingFragment : Fragment() {
 
     companion object {
         val TAG: String = FaceTrackingFragment::class.java.simpleName
 
         fun createFragment() =
-                FaceTrackingFragment().apply {
-                    arguments = Bundle().apply { }
-                }
+            FaceTrackingFragment().apply {
+                arguments = Bundle().apply { }
+            }
     }
+
+    private var gameOverListener: FaceGameOverListener? = null
 
     private lateinit var binding: FragmentFaceTrackingBinding
 
-    private lateinit var currentEmoji: FaceEmoji
+    private var currentEmoji: FaceEmoji? = null
+
+    private val emojiForWin = 20
+    private var correctEmojiCount = 0
 
     private val emojiList = listOf(
-            FaceEmoji.DOUBLE_EYE_CLOSE,
-            FaceEmoji.LEFT_EYE_CLOSE,
-            FaceEmoji.RIGHT_EYE_CLOSE,
+        FaceEmoji.DOUBLE_EYE_CLOSE,
+        FaceEmoji.LEFT_EYE_CLOSE,
+        FaceEmoji.RIGHT_EYE_CLOSE,
 
 //            FaceEmoji.DOUBLE_EYEBROWN_MOVE,
 //            FaceEmoji.RIGHT_EYEBROWN_MOVE,
 //            FaceEmoji.LEFT_EYEBROWN_MOVE,
 
-            FaceEmoji.SMILE,
+        FaceEmoji.SMILE,
 //            FaceEmoji.MOUTH_OPEN,
 
-            FaceEmoji.HEAD_BIAS_LEFT,
-            FaceEmoji.HEAD_BIAS_RIGHT,
+        FaceEmoji.HEAD_BIAS_LEFT,
+        FaceEmoji.HEAD_BIAS_RIGHT,
 
-            FaceEmoji.HEAD_ROTATE_LEFT,
-            FaceEmoji.HEAD_ROTATE_RIGHT
+        FaceEmoji.HEAD_ROTATE_LEFT,
+        FaceEmoji.HEAD_ROTATE_RIGHT
     )
 
     private var lockEmojiProcess = false
@@ -77,7 +89,7 @@ class FaceTrackingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding = DataBindingUtil.bind(view)
-                ?: throw IllegalStateException("ViewDataBinding is null for ${FaceTrackingFragment::class.java.canonicalName}")
+            ?: throw IllegalStateException("ViewDataBinding is null for ${FaceTrackingFragment::class.java.canonicalName}")
 
         updateEmojiOnScreen()
 
@@ -86,7 +98,7 @@ class FaceTrackingFragment : Fragment() {
             setLifecycleOwner(this@FaceTrackingFragment)
             addFrameProcessor { frame ->
 
-                if(first && frame.size.height != 0 && frame.size.width != 0) {
+                if (first && frame.size.height != 0 && frame.size.width != 0) {
                     binding.faceOverlayView.run {
                         layoutParams = layoutParams.apply {
                             width = frame.size.height
@@ -98,29 +110,63 @@ class FaceTrackingFragment : Fragment() {
                 }
 
                 MlKitEngine.extractDataFromFrame(
-                        frame = frame,
-                        listenerEmoji = mlKitEmojiListener,
-                        debugListener = mlKitDebugListener
+                    frame = frame,
+                    listenerEmoji = mlKitEmojiListener,
+                    debugListener = mlKitDebugListener
                 )
             }
         }
 
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        when (context) {
+            is FaceGameOverListener -> gameOverListener = context
+        }
+    }
+
     private fun doneEmoji() {
         lockEmojiProcess()
-        binding.doneOverlay.fadeInOutAnim { updateEmojiOnScreen() }
-        binding.txtEmojiDescription.fadeOutInAnim()
+
+        correctEmojiCount++
+
+        if (isEndGame()) showWinDialog()
+        else {
+            binding.doneOverlay.fadeInOutAnim { updateEmojiOnScreen() }
+            binding.txtEmojiDescription.fadeOutInAnim()
+        }
+    }
+
+    private fun showWinDialog() {
+        AlertDialog.Builder(requireContext())
+            .setCancelable(false)
+            .setTitle("Молодец!")
+            .setMessage("Готов повторить наше приключение?")
+            .setPositiveButton(
+                "Разумеется"
+            ) { _, _ -> gameOverListener?.onFaceGameOverPositive() }
+            .setNegativeButton(
+                "Нет, я устал"
+            ) { _, _ -> gameOverListener?.onFaceGameOverNegative() }
+            .create()
+            .show()
     }
 
     private fun updateEmojiOnScreen() {
-        currentEmoji = randNextEmoji()
+        var newEmoji = randNextEmoji()
+        while (newEmoji == currentEmoji) {
+            newEmoji = randNextEmoji()
+        }
 
-        binding.txtEmojiDescription.setText(currentEmoji.resDescription)
-        Glide.with(binding.emojiAnim)
+        currentEmoji = newEmoji
+        currentEmoji?.let {
+            binding.txtEmojiDescription.setText(it.resDescription)
+            Glide.with(binding.emojiAnim)
                 .asGif()
-                .load(currentEmoji.resAnim)
+                .load(it.resAnim)
                 .into(binding.emojiAnim)
+        }
 
         unlockEmojiProcess()
     }
@@ -138,9 +184,11 @@ class FaceTrackingFragment : Fragment() {
     private fun printContourOnFace(frameSize: Size, face: FirebaseVisionFace) {
         val invertFrameSize = Size(frameSize.height, frameSize.width)
         binding.faceOverlayView.updateContour(
-                invertFrameSize,
-                face.boundingBox,
-                listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
+            invertFrameSize,
+            face.boundingBox,
+            listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
         )
     }
+
+    private fun isEndGame() = correctEmojiCount == emojiForWin
 }

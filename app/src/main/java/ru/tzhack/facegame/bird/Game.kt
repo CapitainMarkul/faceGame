@@ -3,7 +3,6 @@ package ru.tzhack.facegame.bird
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
 import android.os.Handler
@@ -11,6 +10,8 @@ import android.os.Looper
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.SurfaceView
+import androidx.core.content.ContextCompat
+import ru.tzhack.facegame.R
 
 sealed class Movement {
     object Stopped : Movement()
@@ -30,13 +31,14 @@ class Game(
 ) : SurfaceView(context),
     Runnable {
 
-    var endGameListener: (() -> Unit)? = null
+    var endGameListener: ((timeOver: Boolean) -> Unit)? = null
 
     private var playing = false
     var pause = true
     private var thread: Thread? = null
 
-    private val manualInput = true
+    // Отключаем ручное управление
+    private val manualInput = false
 
     private var canvas: Canvas = Canvas()
     private val paint: Paint = Paint()
@@ -62,7 +64,7 @@ class Game(
     private val viewport = Viewport(size.y.toFloat())
     private val input = Input(size)
 
-    private val backgroundColor = Color.rgb(127, 199, 255)
+    private val backgroundColor = ContextCompat.getColor(context, R.color.colorPrimaryDark)
 
     init {
         Bullet.init(context)
@@ -149,9 +151,10 @@ class Game(
             bonuses.add(Bonus.generate())
         }
 
-        if (finish.position.top < bird.position.top) {
+        val timeOver = gameToolbar.time <= 0F
+        if (finish.position.top < bird.position.top || timeOver) {
             Handler(Looper.getMainLooper()).post {
-                endGameListener?.invoke()
+                endGameListener?.invoke(timeOver)
             }
             stop()
         }

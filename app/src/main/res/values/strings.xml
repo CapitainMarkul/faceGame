@@ -27,4 +27,5 @@
     <string name="start_game">Начать игру</string>
     <string name="stop_discovering">Остановить поиск</string>
     <string name="start_discovering">Начать поиск</string>
+    <string name="fit_quest">Fit Quest</string>
 </resources>

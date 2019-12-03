@@ -6,10 +6,10 @@ import android.graphics.Paint
 
 class GameToolbar {
 
-    private var time = 0f
+    var time = 50f
 
     fun update(dt: Float) {
-        time += dt
+        time -= dt
     }
 
     fun draw(canvas: Canvas, paint: Paint) {

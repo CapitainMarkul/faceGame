@@ -18,6 +18,8 @@ import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitHeroListener
 import kotlin.math.absoluteValue
 
 interface GameOverListener {
+    fun onGameStarted()
+    fun onBonusLevel()
     fun onGameOver()
 }
 
@@ -60,7 +62,12 @@ class BirdFragment : Fragment() {
         }
 
         override fun onHeroSuperPowerAnim() {
-            game?.pause = false
+            game?.run {
+                if (pause) {
+                    gameOverListener?.onGameStarted()
+                }
+                pause = false
+            }
         }
 
         override fun onHeroRightEyeAnim() {
@@ -104,14 +111,28 @@ class BirdFragment : Fragment() {
         requireActivity().windowManager.defaultDisplay.getSize(size)
         game = Game(requireContext(), size)
         game_container.addView(game)
-        game!!.endGameListener = {
-            AlertDialog.Builder(requireContext())
-                .setTitle("Bonus Level")
-                .setPositiveButton(
-                    "Start"
-                ) { _, _ -> gameOverListener?.onGameOver() }
-                .create()
-                .show()
+        game!!.endGameListener = { timeOver ->
+            if (timeOver) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Увы :(")
+                    .setMessage("Ты не смог добраться до финиша. Попробуешь еще раз?")
+                    .setCancelable(false)
+                    .setPositiveButton(
+                        "Конечно"
+                    ) { _, _ -> gameOverListener?.onGameOver() }
+                    .create()
+                    .show()
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Поздравляем!")
+                    .setMessage("Ты добрался до бонус уровня. Готов начать?")
+                    .setCancelable(false)
+                    .setPositiveButton(
+                        "Конечно"
+                    ) { _, _ -> gameOverListener?.onBonusLevel() }
+                    .create()
+                    .show()
+            }
         }
     }
 

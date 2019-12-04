@@ -52,15 +52,18 @@ class FaceTrackingFragment : Fragment() {
         FaceEmoji.LEFT_EYE_CLOSE,
         FaceEmoji.RIGHT_EYE_CLOSE,
 
-//            FaceEmoji.DOUBLE_EYEBROWN_MOVE,
-//            FaceEmoji.RIGHT_EYEBROWN_MOVE,
-//            FaceEmoji.LEFT_EYEBROWN_MOVE,
+        FaceEmoji.DOUBLE_EYEBROWN_MOVE,
+        FaceEmoji.RIGHT_EYEBROWN_MOVE,
+        FaceEmoji.LEFT_EYEBROWN_MOVE,
 
         FaceEmoji.SMILE,
-//            FaceEmoji.MOUTH_OPEN,
+        FaceEmoji.MOUTH_OPEN,
 
         FaceEmoji.HEAD_BIAS_LEFT,
         FaceEmoji.HEAD_BIAS_RIGHT,
+
+        FaceEmoji.HEAD_BIAS_DOWN,
+        FaceEmoji.HEAD_BIAS_UP,
 
         FaceEmoji.HEAD_ROTATE_LEFT,
         FaceEmoji.HEAD_ROTATE_RIGHT
@@ -111,6 +114,7 @@ class FaceTrackingFragment : Fragment() {
 
                 MlKitEngine.extractDataFromFrame(
                     frame = frame,
+                    currentEmoji = currentEmoji,
                     listenerEmoji = mlKitEmojiListener,
                     debugListener = mlKitDebugListener
                 )

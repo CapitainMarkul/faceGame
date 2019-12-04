@@ -40,6 +40,11 @@ interface MlKitHeroListener {
     fun onHeroDoubleEyeAnim()
 
     /**
+     * Метод вызывается, когда игрок открывает рот.
+     * */
+    fun onHeroMouthOpenAnim()
+
+    /**
      * Метод для вывода ошибок в работе MlKit.
      *
      * @param exception информация об ошибке.

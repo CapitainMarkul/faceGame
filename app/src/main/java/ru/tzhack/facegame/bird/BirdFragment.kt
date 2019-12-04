@@ -82,6 +82,10 @@ class BirdFragment : Fragment() {
             game?.shot()
         }
 
+        override fun onHeroMouthOpenAnim() {
+            //TODO("not implemented")
+        }
+
         override fun onError(exception: Exception) {
 
         }

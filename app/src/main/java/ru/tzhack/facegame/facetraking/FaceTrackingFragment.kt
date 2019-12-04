@@ -24,7 +24,6 @@ import kotlin.random.Random
 
 interface FaceGameOverListener {
     fun onFaceGameOverPositive()
-    fun onFaceGameOverNegative()
 }
 
 class FaceTrackingFragment : Fragment() {
@@ -146,13 +145,10 @@ class FaceTrackingFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setCancelable(false)
             .setTitle("Молодец!")
-            .setMessage("Готов повторить наше приключение?")
+            .setMessage("Ты хорошо поработал, теперь можно и поиграть. Ты готов?")
             .setPositiveButton(
-                "Разумеется"
+                "Конечно"
             ) { _, _ -> gameOverListener?.onFaceGameOverPositive() }
-            .setNegativeButton(
-                "Нет, я устал"
-            ) { _, _ -> gameOverListener?.onFaceGameOverNegative() }
             .create()
             .show()
     }

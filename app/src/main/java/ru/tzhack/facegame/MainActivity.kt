@@ -28,23 +28,13 @@ class MainActivity : AppCompatActivity(), GameOverListener, FaceGameOverListener
         hideStartControl()
     }
 
-    override fun onBonusLevel() {
-        showBonusGameFragment()
-    }
-
     override fun onGameOver() {
         showGameFragment()
-        showStartControl()
     }
 
     override fun onFaceGameOverPositive() {
         showStartControl()
-        showGameFragment()
-    }
-
-    override fun onFaceGameOverNegative() {
-        showStartControl()
-        showGameFragment()
+        showBonusGameFragment()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -66,21 +56,21 @@ class MainActivity : AppCompatActivity(), GameOverListener, FaceGameOverListener
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (hasCameraPermissions()) {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, BirdFragment.createFragment(), BirdFragment.TAG)
+                    .replace(R.id.fragment_container, FaceTrackingFragment.createFragment(), FaceTrackingFragment.TAG)
                     .commit()
             } else {
                 requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
             }
         } else {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, BirdFragment.createFragment(), BirdFragment.TAG)
+                .replace(R.id.fragment_container, FaceTrackingFragment.createFragment(), FaceTrackingFragment.TAG)
                 .commit()
         }
     }
 
     private fun showBonusGameFragment() {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, FaceTrackingFragment.createFragment(), FaceTrackingFragment.TAG)
+            .replace(R.id.fragment_container, BirdFragment.createFragment(), BirdFragment.TAG)
             .commit()
     }
 

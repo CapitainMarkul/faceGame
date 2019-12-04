@@ -19,7 +19,6 @@ import kotlin.math.absoluteValue
 
 interface GameOverListener {
     fun onGameStarted()
-    fun onBonusLevel()
     fun onGameOver()
 }
 
@@ -64,7 +63,7 @@ class BirdFragment : Fragment() {
         override fun onHeroSuperPowerAnim() {
             game?.run {
                 if (pause) {
-                    gameOverListener?.onGameStarted()
+                    gameOverListener?.onGameOver()
                 }
                 pause = false
             }
@@ -133,11 +132,11 @@ class BirdFragment : Fragment() {
             } else {
                 AlertDialog.Builder(requireContext())
                     .setTitle("Поздравляем!")
-                    .setMessage("Ты добрался до бонус уровня. Готов начать?")
+                    .setMessage("Готов повторить наше приключение?")
                     .setCancelable(false)
                     .setPositiveButton(
                         "Конечно"
-                    ) { _, _ -> gameOverListener?.onBonusLevel() }
+                    ) { _, _ -> gameOverListener?.onGameOver() }
                     .create()
                     .show()
             }

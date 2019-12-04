@@ -22,9 +22,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/fit_quest"
+        android:text="@string/fit_quest_bonus"
         android:textColor="@color/colorTextPrimary"
-        android:textSize="50dp"
+        android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,6 +32,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5"
         app:layout_constraintVertical_chainStyle="packed"
+        android:visibility="invisible"
         tools:ignore="SpUsage"/>
 
     <TextView
@@ -40,12 +41,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:text="Улыбнитесь, чтобы начать игру :)"
+        android:text="@string/action_for_start_bonus_level"
         android:textAllCaps="false"
         android:textColor="@color/colorTextPrimary"
         android:textSize="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"
         app:layout_constraintTop_toBottomOf="@+id/txt_title"
         tools:ignore="SpUsage,UnusedAttribute"/>
 
@@ -62,6 +64,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"
         app:layout_constraintTop_toBottomOf="@+id/btn_start_game"
         tools:ignore="SpUsage,UnusedAttribute"/>
 
@@ -70,14 +73,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="* Наклоны головы - движение персонажа\n
-        * Зажмуривание - стрельба"
+        android:text="* Улыбка - стрельба\n
+        * Наклоны головы - движение персонажа\n
+        * Зажмуривание - секретное действие"
         android:textAllCaps="false"
         android:textColor="@color/colorTextPrimary"
-        android:textSize="20dp"
+        android:textSize="18dp"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"
         app:layout_constraintTop_toBottomOf="@+id/txt_input_title"
         tools:ignore="SpUsage,UnusedAttribute"/>
 

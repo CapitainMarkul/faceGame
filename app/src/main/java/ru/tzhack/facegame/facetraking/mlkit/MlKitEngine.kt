@@ -73,7 +73,7 @@ object MlKitEngine {
 
     private fun calculateHeroActions(face: FirebaseVisionFace, listener: MlKitHeroListener) {
         listener.onHeroHorizontalAnim(face.headEulerAngleZ)
-        //onHeroSpeedAnim(face.headEulerAngleZ)
+
         if (face.checkSmileOnFaceAvailable()) listener.onHeroSuperPowerAnim()
         if (face.checkRightEyeCloseOnFaceAvailable()) listener.onHeroRightEyeAnim()
         if (face.checkLeftEyeCloseOnFaceAvailable()) listener.onHeroLeftEyeAnim()
@@ -105,16 +105,6 @@ object MlKitEngine {
             // Движения обеими бровями
             DOUBLE_EYEBROWN_MOVE -> if (face.checkDoubleEyeBrownMoveOnFaceAvailable()) listener.onEmojiObtained(
                 DOUBLE_EYEBROWN_MOVE
-            )
-
-            // Движение левой бровью
-            LEFT_EYEBROWN_MOVE -> if (face.checkLeftEyeBrownMoveOnFaceAvailable()) listener.onEmojiObtained(
-                LEFT_EYEBROWN_MOVE
-            )
-
-            // Движение правой бровью
-            RIGHT_EYEBROWN_MOVE -> if (face.checkRightEyeBrownMoveOnFaceAvailable()) listener.onEmojiObtained(
-                RIGHT_EYEBROWN_MOVE
             )
 
             // Улыбка

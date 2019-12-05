@@ -1,5 +1,6 @@
 package ru.tzhack.facegame.facetraking.util
 
+import android.util.Log
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour.*
 
@@ -13,7 +14,7 @@ private const val correctHeadRightRotateDelta = 70F
 private const val correctHeadBiasDownDelta = 7F
 private const val correctHeadBiasUpDelta = 40F
 
-private const val correctEyeBrownMoveDelta = 6F
+private const val correctEyeBrownMoveDelta = -17F
 
 // For Help:
 // https://firebase.google.com/docs/ml-kit/images/examples/face_contours.svg
@@ -139,39 +140,47 @@ fun FirebaseVisionFace.checkDoubleEyeCloseOnFaceAvailable(): Boolean {
 }
 
 /**
- * Метод для проверки движения левой брови на лице игрока.
- * */
-fun FirebaseVisionFace.checkLeftEyeBrownMoveOnFaceAvailable(): Boolean {
-    return true
-//    val eyeBrownCenterPointIndex = 2
-//    val eyeBrownCenter = getContour(LEFT_EYEBROW_TOP).points[eyeBrownCenterPointIndex].y
-//
-//    val faceCenterRightPointIndex = 33
-//    val faceRight = getContour(FACE).points[faceCenterRightPointIndex].y
-//
-//    val resultDelta = eyeBrownCenter - faceRight
-//    Log.e("TAG", "Right: $resultDelta")
-//    return resultDelta < correctEyeBrownMoveDelta
-}
-
-/**
- * Метод для проверки движения правой брови на лице игрока.
- * */
-fun FirebaseVisionFace.checkRightEyeBrownMoveOnFaceAvailable(): Boolean {
-    return true
-//    val eyeBrownCenterPointIndex = 2
-//    val eyeBrownCenter = getContour(LEFT_EYEBROW_TOP).points[eyeBrownCenterPointIndex].y
-//
-//    val faceCenterRightPointIndex = 33
-//    val faceRight = getContour(FACE).points[faceCenterRightPointIndex].y
-//
-//    val resultDelta = eyeBrownCenter - faceRight
-//    Log.e("TAG", "Right: $resultDelta")
-//    return resultDelta < correctEyeBrownMoveDelta
-}
-
-/**
  * Метод для проверки движения обеих бровей на лице игрока.
+ * TODO:
  * */
-fun FirebaseVisionFace.checkDoubleEyeBrownMoveOnFaceAvailable(): Boolean =
-    checkLeftEyeBrownMoveOnFaceAvailable() || checkRightEyeBrownMoveOnFaceAvailable()
+
+fun FirebaseVisionFace.checkDoubleEyeBrownMoveOnFaceAvailable(): Boolean {
+    val rightEyeBrownCenterPointIndex = 2
+    val rightEyeBrownCenter = getContour(RIGHT_EYEBROW_TOP).points[rightEyeBrownCenterPointIndex].y
+
+    val faceCenterRightPointIndex = 2
+    val faceRight = getContour(FACE).points[faceCenterRightPointIndex].y
+
+    val rightEyeDelta = rightEyeBrownCenter - faceRight
+    Log.e("TAG", "rightEyeDelta: ${rightEyeDelta}")
+
+    val rightEyeBrownTopStart = getContour(RIGHT_EYEBROW_BOTTOM).points[0].x
+    val rightEyeBrownTopEnd = getContour(RIGHT_EYEBROW_BOTTOM).points[3].x
+    val scaleZoomRight = rightEyeBrownTopEnd - rightEyeBrownTopStart
+    //    Log.e("TAG", "ScaleRes: ${correctEyeBrownMoveDelta + scaleZoom}")
+
+    // Защита от движения обеими бровями
+//    val leftEyeBrownTop = getContour(LEFT_EYEBROW_TOP).points[2].y
+//    val faceLeft = getContour(FACE).points[3].y
+//    val scaleZoom = leftEyeBrownTop - faceLeft
+
+
+    //Левый
+    val leftEyeBrownCenterPointIndex = 2
+    val leftEyeBrownCenter = getContour(LEFT_EYEBROW_TOP).points[leftEyeBrownCenterPointIndex].y
+
+    val faceCenterLeftPointIndex = 34
+    val faceLeft = getContour(FACE).points[faceCenterLeftPointIndex].y
+
+    val leftEyeDelta = leftEyeBrownCenter - faceLeft
+    Log.e("TAG", "leftEyeDelta: ${leftEyeDelta}")
+
+    val leftEyeBrownTopStart = getContour(LEFT_EYEBROW_BOTTOM).points[0].x
+    val leftEyeBrownTopEnd = getContour(LEFT_EYEBROW_BOTTOM).points[3].x
+    val scaleZoomLeft = leftEyeBrownTopEnd - leftEyeBrownTopStart
+
+
+
+//    Log.e("TAG", "ScaleRes: ${correctEyeBrownMoveDelta + scaleZoom}")
+    return true
+}

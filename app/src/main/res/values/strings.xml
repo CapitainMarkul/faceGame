@@ -18,10 +18,10 @@
     <string name="face_emoji_head_rotate_left">Поверните голову влево</string>
     <string name="face_emoji_head_rotate_right">Поверните голову вправо</string>
 
-    <string name="face_emoji_left_eyebrown_move">Подвигайте левой бровью</string>
-    <string name="face_emoji_right_eyebrown_move">Подвигайте правой бровью</string>
-    <string name="face_emoji_double_eyebrown_move">Подвигайте обеими бровями</string>
+    <string name="face_emoji_double_eyebrown_move">Подвигайте бровями</string>
     <string name="face_emoji_correct">Correct!</string>
 
     <string name="action_for_start_bonus_level">Улыбнитесь, чтобы начать игру :)</string>
+    <string name="move_rules">* Улыбка - стрельба * Наклоны головы - движение персонажа * Зажмуривание - секретное действие</string>
+    <string name="move_title">Управление:</string>
 </resources>

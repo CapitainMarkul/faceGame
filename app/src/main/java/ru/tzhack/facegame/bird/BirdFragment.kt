@@ -17,10 +17,8 @@ import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitDebugListener
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitHeroListener
 import kotlin.math.absoluteValue
 
-interface GameOverListener {
-    fun onGameStarted()
-    fun onBonusLevel()
-    fun onGameOver()
+interface BirdGameControlListener {
+    fun onBirdGameOver()
 }
 
 class BirdFragment : Fragment() {
@@ -35,7 +33,7 @@ class BirdFragment : Fragment() {
     }
 
     private var game: Game? = null
-    private var gameOverListener: GameOverListener? = null
+    private var birdGameControlListener: BirdGameControlListener? = null
 
     private val mlKitHeroListener = object : MlKitHeroListener {
         override fun onHeroHorizontalAnim(headEulerAngleZ: Float) {
@@ -63,9 +61,7 @@ class BirdFragment : Fragment() {
 
         override fun onHeroSuperPowerAnim() {
             game?.run {
-                if (pause) {
-                    gameOverListener?.onGameStarted()
-                }
+                if (pause) hideBirdControl()
                 pause = false
             }
         }
@@ -127,17 +123,17 @@ class BirdFragment : Fragment() {
                     .setCancelable(false)
                     .setPositiveButton(
                         "Конечно"
-                    ) { _, _ -> gameOverListener?.onGameOver() }
+                    ) { _, _ -> birdGameControlListener?.onBirdGameOver() }
                     .create()
                     .show()
             } else {
                 AlertDialog.Builder(requireContext())
                     .setTitle("Поздравляем!")
-                    .setMessage("Ты добрался до бонус уровня. Готов начать?")
+                    .setMessage("Готов повторить наше приключение?")
                     .setCancelable(false)
                     .setPositiveButton(
                         "Конечно"
-                    ) { _, _ -> gameOverListener?.onBonusLevel() }
+                    ) { _, _ -> birdGameControlListener?.onBirdGameOver() }
                     .create()
                     .show()
             }
@@ -162,7 +158,14 @@ class BirdFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         when (context) {
-            is GameOverListener -> gameOverListener = context
+            is BirdGameControlListener -> birdGameControlListener = context
         }
+    }
+
+    private fun hideBirdControl() {
+        txt_title.visibility = View.GONE
+        btn_start_game.visibility = View.GONE
+        txt_input_title.visibility = View.GONE
+        txt_input.visibility = View.GONE
     }
 }

@@ -13,8 +13,6 @@ enum class FaceEmoji(
     RIGHT_EYE_CLOSE(R.drawable.right_eye_anim, R.string.face_emoji_right_eye_close),
 
     DOUBLE_EYEBROWN_MOVE(R.drawable.double_eyebrown_anim, R.string.face_emoji_double_eyebrown_move),
-    LEFT_EYEBROWN_MOVE(R.drawable.left_eyebrown_anim, R.string.face_emoji_left_eyebrown_move),
-    RIGHT_EYEBROWN_MOVE(R.drawable.right_eyebrown_anim, R.string.face_emoji_right_eyebrown_move),
 
     SMILE(R.drawable.smile_anim, R.string.face_emoji_smile),
 

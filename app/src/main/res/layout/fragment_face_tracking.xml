@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -12,6 +13,15 @@
         android:layout_height="match_parent"
         android:background="@android:color/white">
 
+        <View
+            android:id="@+id/emoji_anim_divider_top"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/colorDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
         <ImageView
             android:id="@+id/emoji_anim"
             android:layout_width="0dp"
@@ -19,8 +29,8 @@
             app:layout_constraintBottom_toTopOf="@+id/horizontal_guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription,UnusedAttribute" />
+            app:layout_constraintTop_toBottomOf="@+id/emoji_anim_divider_top"
+            tools:ignore="ContentDescription,UnusedAttribute"/>
 
         <FrameLayout
             android:id="@+id/done_overlay"
@@ -38,7 +48,7 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center"
                 android:layout_marginBottom="30dp"
-                android:src="@drawable/ic_done_24dp" />
+                android:src="@drawable/ic_done_24dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -47,7 +57,7 @@
                 android:layout_marginTop="30dp"
                 android:text="@string/face_emoji_correct"
                 android:textColor="@android:color/white"
-                android:textSize="36sp" />
+                android:textSize="36sp"/>
 
         </FrameLayout>
 
@@ -58,8 +68,7 @@
             android:background="@color/colorDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/horizontal_guideline" />
-
+            app:layout_constraintTop_toBottomOf="@+id/horizontal_guideline"/>
 
         <TextView
             android:id="@+id/txt_emoji_description"
@@ -73,7 +82,7 @@
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/emoji_divider_top" />
+            app:layout_constraintTop_toBottomOf="@+id/emoji_divider_top"/>
 
         <View
             android:id="@+id/emoji_divider_bottom"
@@ -82,7 +91,7 @@
             android:background="@color/colorDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txt_emoji_description" />
+            app:layout_constraintTop_toBottomOf="@+id/txt_emoji_description"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
@@ -98,19 +107,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimary"
+                android:scaleType="centerCrop"
                 app:cameraAudio="off"
                 app:cameraAudioBitRate="0"
                 app:cameraFacing="front"
-                app:cameraFlash="off"
-                app:cameraGestureScrollHorizontal="exposureCorrection"
-                app:cameraHdr="off"
-                app:cameraUseDeviceOrientation="false"
-                app:cameraVideoSizeAspectRatio="9:16"
-                app:cameraWhiteBalance="auto"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <ru.tzhack.facegame.facetraking.view.FaceContourRender
                 android:id="@+id/face_overlay_view"
@@ -120,7 +124,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/camera_view"
                 app:layout_constraintStart_toStartOf="@+id/camera_view"
                 app:layout_constraintTop_toTopOf="@+id/camera_view"
-                tools:visibility="gone" />
+                tools:visibility="gone"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -130,7 +134,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.5" />
+            app:layout_constraintGuide_percent="0.5"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

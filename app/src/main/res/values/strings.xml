@@ -1,10 +1,6 @@
 <resources>
-    <string name="app_name">Face Game</string>
-
-    <string name="btn_host_game">Start Host</string>
-    <string name="btn_search_game">Start Search</string>
-
-    <string name="player_nickname_hint">Nickname</string>
+    <string name="app_name">Fit Quest</string>
+    <string name="fit_quest_bonus">Bonus Level</string>
 
     <!--    TODO: translate to English -->
     <string name="face_emoji_double_eye_close">Зажмуртесь</string>
@@ -22,14 +18,10 @@
     <string name="face_emoji_head_rotate_left">Поверните голову влево</string>
     <string name="face_emoji_head_rotate_right">Поверните голову вправо</string>
 
-    <string name="face_emoji_left_eyebrown_move">Подвигайте левой бровью</string>
-    <string name="face_emoji_right_eyebrown_move">Подвигайте правой бровью</string>
-    <string name="face_emoji_double_eyebrown_move">Подвигайте обеими бровями</string>
+    <string name="face_emoji_double_eyebrown_move">Подвигайте бровями</string>
     <string name="face_emoji_correct">Correct!</string>
-    <string name="server_start">Запуск сервера</string>
-    <string name="stop_server">Остановка сервера</string>
-    <string name="start_game">Начать игру</string>
-    <string name="stop_discovering">Остановить поиск</string>
-    <string name="start_discovering">Начать поиск</string>
-    <string name="fit_quest">Fit Quest</string>
+
+    <string name="action_for_start_bonus_level">Улыбнитесь, чтобы начать игру :)</string>
+    <string name="move_rules">* Улыбка - стрельба * Наклоны головы - движение персонажа * Зажмуривание - секретное действие</string>
+    <string name="move_title">Управление:</string>
 </resources>

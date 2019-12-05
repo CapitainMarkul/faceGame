@@ -24,7 +24,6 @@ import kotlin.random.Random
 
 interface FaceGameOverListener {
     fun onFaceGameOverPositive()
-    fun onFaceGameOverNegative()
 }
 
 class FaceTrackingFragment : Fragment() {
@@ -53,8 +52,6 @@ class FaceTrackingFragment : Fragment() {
         FaceEmoji.RIGHT_EYE_CLOSE,
 
         FaceEmoji.DOUBLE_EYEBROWN_MOVE,
-        FaceEmoji.RIGHT_EYEBROWN_MOVE,
-        FaceEmoji.LEFT_EYEBROWN_MOVE,
 
         FaceEmoji.SMILE,
         FaceEmoji.MOUTH_OPEN,
@@ -82,7 +79,6 @@ class FaceTrackingFragment : Fragment() {
             face?.let { printContourOnFace(frameSize, it) }
         }
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_face_tracking, container, false)
@@ -146,13 +142,10 @@ class FaceTrackingFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setCancelable(false)
             .setTitle("Молодец!")
-            .setMessage("Готов повторить наше приключение?")
+            .setMessage("Ты хорошо поработал, теперь можно и поиграть. Ты готов?")
             .setPositiveButton(
-                "Разумеется"
+                "Конечно"
             ) { _, _ -> gameOverListener?.onFaceGameOverPositive() }
-            .setNegativeButton(
-                "Нет, я устал"
-            ) { _, _ -> gameOverListener?.onFaceGameOverNegative() }
             .create()
             .show()
     }
@@ -168,6 +161,7 @@ class FaceTrackingFragment : Fragment() {
             binding.txtEmojiDescription.setText(it.resDescription)
             Glide.with(binding.emojiAnim)
                 .asGif()
+                .centerCrop()
                 .load(it.resAnim)
                 .into(binding.emojiAnim)
         }
@@ -190,6 +184,7 @@ class FaceTrackingFragment : Fragment() {
         binding.faceOverlayView.updateContour(
             invertFrameSize,
             face.boundingBox,
+            listOf(face.getContour(FirebaseVisionFaceContour.RIGHT_EYEBROW_TOP).points),
             listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
         )
     }

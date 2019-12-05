@@ -15,17 +15,18 @@ class Bird(
         private const val WIDTH_SPRITE = 524f / K_SPRITE
         private const val HEIGHT_SPRITE = 616f / K_SPRITE
 
-        private const val WIDTH_SHOT_SPRITE = 465f / K_SPRITE
-        private const val HEIGHT_SHOT_SPRITE = 674f / K_SPRITE
-
         private const val SPEED_VERTICAL_DEFAULT = 200
         private const val SPEED_VERTICAL_STEP = 70
+        private const val SPEED_BONUS_MAX_TIME = 5
         private const val MAX_SPEED_HORIZONTAL = 500
     }
 
     private var speedVertical = SPEED_VERTICAL_DEFAULT
     private var movement: Movement = Movement.Stopped
     private var shotState = false
+
+    private var speedBonusType: BonusType? = null
+    private var speedBonusTime = 0f
 
     val position = Position(
         left = screenX / 2f - WIDTH_SPRITE / 2f,
@@ -63,6 +64,15 @@ class Bird(
     )
 
     fun update(dt: Float, frontYWall: Wall?) {
+        if (speedBonusType != null) {
+            speedBonusTime += dt
+            if (speedBonusTime > SPEED_BONUS_MAX_TIME) {
+                speedVertical = SPEED_VERTICAL_DEFAULT
+                speedBonusType = null
+                speedBonusTime = 0f
+            }
+        }
+
         if (shotState && shotSpriteAnimation.cycleCount > 0) {
             shotSpriteAnimation.reset()
             spriteAnimation.reset()
@@ -117,12 +127,13 @@ class Bird(
         shotState = true
     }
 
-    fun speedUp() {
-        speedVertical += SPEED_VERTICAL_STEP
-    }
-
-    fun speedDown() {
-        speedVertical -= SPEED_VERTICAL_STEP
+    fun setSpeedBonus(bonusType: BonusType) {
+        speedBonusType = bonusType
+        if (bonusType == BonusType.SPEED_DOWN) {
+            speedVertical = SPEED_VERTICAL_DEFAULT - SPEED_VERTICAL_STEP
+        } else if (bonusType == BonusType.SPEED_UP) {
+            speedVertical = SPEED_VERTICAL_DEFAULT + SPEED_VERTICAL_STEP
+        }
     }
 
     fun getY(): Float {

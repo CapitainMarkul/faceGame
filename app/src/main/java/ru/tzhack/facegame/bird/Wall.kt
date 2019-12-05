@@ -11,6 +11,9 @@ class Wall(
     private val posRightTube: Position
 ) {
 
+    private var crashedLeft = false
+    private var crashedRight = false
+
     companion object {
         private lateinit var bitmap: Bitmap
 
@@ -73,9 +76,22 @@ class Wall(
     }
 
     fun collision(position: Position): Boolean {
-        if (posLeftTube.contains(position, COLLISION_ALLOWED_SPRITE) ||
-            posRightTube.contains(position, COLLISION_ALLOWED_SPRITE)
+        if ((!crashedLeft && posLeftTube.contains(position, COLLISION_ALLOWED_SPRITE)) ||
+            (!crashedRight && posRightTube.contains(position, COLLISION_ALLOWED_SPRITE))
         ) {
+            return true
+        }
+
+        return false
+    }
+
+    fun checkCrashed(position: Position): Boolean {
+        if (!crashedLeft && posLeftTube.contains(position, COLLISION_ALLOWED_SPRITE)) {
+            crashedLeft = true
+            return true
+        }
+        if (!crashedRight && posRightTube.contains(position, COLLISION_ALLOWED_SPRITE)) {
+            crashedRight = true
             return true
         }
 
@@ -89,45 +105,55 @@ class Wall(
 
         val widthSpriteWithOverlay = WIDTH_SPRITE - OVERLAY_SPRITE
 
-        var x = posLeftTube.right - WIDTH_SPRITE
-        while (x > posLeftTube.left - widthSpriteWithOverlay) {
-            canvas.drawBitmap(
-                bitmap,
-                x,
-                viewport.worldToScreenPoint(posLeftTube.top),
-                paint
-            )
-            x -= widthSpriteWithOverlay
+        if (!crashedLeft) {
+            var x = posLeftTube.right - WIDTH_SPRITE
+            while (x > posLeftTube.left - widthSpriteWithOverlay) {
+                canvas.drawBitmap(
+                    bitmap,
+                    x,
+                    viewport.worldToScreenPoint(posLeftTube.top),
+                    paint
+                )
+                x -= widthSpriteWithOverlay
+            }
         }
 
-        x = posRightTube.right - posRightTube.width % widthSpriteWithOverlay
-        while (x >= posRightTube.left) {
-            canvas.drawBitmap(
-                bitmap,
-                x,
-                viewport.worldToScreenPoint(posRightTube.top),
-                paint
-            )
-            x -= widthSpriteWithOverlay
+        if (!crashedRight) {
+            var x = posRightTube.right - posRightTube.width % widthSpriteWithOverlay
+            while (x >= posRightTube.left) {
+                canvas.drawBitmap(
+                    bitmap,
+                    x,
+                    viewport.worldToScreenPoint(posRightTube.top),
+                    paint
+                )
+                x -= widthSpriteWithOverlay
+            }
         }
 
         if (drawOutline) {
             paint.style = Paint.Style.STROKE
             paint.color = Color.BLACK
-            canvas.drawRect(
-                posLeftTube.left,
-                viewport.worldToScreenPoint(posLeftTube.top - COLLISION_ALLOWED_SPRITE),
-                posLeftTube.right,
-                viewport.worldToScreenPoint(posLeftTube.bottom + COLLISION_ALLOWED_SPRITE),
-                paint
-            )
-            canvas.drawRect(
-                posRightTube.left,
-                viewport.worldToScreenPoint(posRightTube.top - COLLISION_ALLOWED_SPRITE),
-                posRightTube.right,
-                viewport.worldToScreenPoint(posRightTube.bottom + COLLISION_ALLOWED_SPRITE),
-                paint
-            )
+            if (!crashedLeft) {
+                canvas.drawRect(
+                    posLeftTube.left,
+                    viewport.worldToScreenPoint(posLeftTube.top - COLLISION_ALLOWED_SPRITE),
+                    posLeftTube.right,
+                    viewport.worldToScreenPoint(posLeftTube.bottom + COLLISION_ALLOWED_SPRITE),
+                    paint
+                )
+            }
+
+            if (!crashedRight) {
+                canvas.drawRect(
+                    posRightTube.left,
+                    viewport.worldToScreenPoint(posRightTube.top - COLLISION_ALLOWED_SPRITE),
+                    posRightTube.right,
+                    viewport.worldToScreenPoint(posRightTube.bottom + COLLISION_ALLOWED_SPRITE),
+                    paint
+                )
+            }
+
         }
     }
 

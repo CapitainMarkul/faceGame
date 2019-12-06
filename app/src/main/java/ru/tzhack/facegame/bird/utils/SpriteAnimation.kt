@@ -1,7 +1,10 @@
-package ru.tzhack.facegame.bird
+package ru.tzhack.facegame.bird.utils
 
 import android.graphics.Bitmap
 
+/**
+ * Отвечает за спрайтовую анимацию, обеспечивает переключение фреймов
+ */
 class SpriteAnimation(
     private val frames: Array<Bitmap>,
     cycleSec: Float

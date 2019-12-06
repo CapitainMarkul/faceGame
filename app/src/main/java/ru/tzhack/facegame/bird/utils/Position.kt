@@ -1,5 +1,8 @@
-package ru.tzhack.facegame.bird
+package ru.tzhack.facegame.bird.utils
 
+/**
+ *  Позиция и размер игрового объекта
+ */
 data class Position(
     var left: Float,
     var top: Float,

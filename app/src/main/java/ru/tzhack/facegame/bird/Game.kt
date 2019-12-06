@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 import androidx.core.content.ContextCompat
 import ru.tzhack.facegame.R
+import ru.tzhack.facegame.bird.gameobj.*
 
 sealed class Movement {
     object Stopped : Movement()
@@ -43,15 +44,16 @@ class Game(
     private var canvas: Canvas = Canvas()
     private val paint: Paint = Paint()
 
-    private val bird: Bird = Bird(context, size.x.toFloat())
+    private val bird: Bird =
+        Bird(context, size.x.toFloat())
     private val wallsSize = 20
-    private val walls: List<Wall> = Wall.generate(
+    private val blocks: List<Block> = Block.generate(
         context,
         screenX = size.x.toFloat(),
         size = wallsSize
     )
     private val finish = Finish(
-        positionY = walls.last().getTop() + (Wall.wallsSpacing * 2),
+        positionY = blocks.last().getTop() + (Block.wallsSpacing * 2),
         width = size.x.toFloat(),
         context = context
     )
@@ -111,10 +113,10 @@ class Game(
     }
 
     private fun update(dt: Float) {
-        var frontWall: Wall? = null
-        walls.forEach {
+        var frontBlock: Block? = null
+        blocks.forEach {
             if (it.isInFront(bird.position)) {
-                frontWall = it
+                frontBlock = it
                 return@forEach
             }
         }
@@ -133,7 +135,7 @@ class Game(
             }
         }
 
-        bird.update(dt, frontWall)
+        bird.update(dt, frontBlock)
         gameToolbar.update(dt)
         bonuses.forEach { it.update(dt) }
 
@@ -143,7 +145,7 @@ class Game(
             if (bullet.isCleared()) {
                 bulletsIterator.remove()
             } else {
-                walls.find { it.checkCrashed(bullet.position) }?.let {
+                blocks.find { it.checkCrashed(bullet.position) }?.let {
                     bullet.setCrashed()
                 }
 
@@ -172,7 +174,7 @@ class Game(
 
                 canvas.drawColor(backgroundColor)
 
-                walls.forEach { it.draw(canvas, paint, viewport) }
+                blocks.forEach { it.draw(canvas, paint, viewport) }
 
                 finish.onDraw(canvas, paint, viewport)
 

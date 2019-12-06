@@ -184,8 +184,7 @@ class FaceTrackingFragment : Fragment() {
         binding.faceOverlayView.updateContour(
             invertFrameSize,
             face.boundingBox,
-            listOf(face.getContour(FirebaseVisionFaceContour.RIGHT_EYEBROW_TOP).points),
-            listOf(face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points)
+            face.getContour(FirebaseVisionFaceContour.ALL_POINTS).points
         )
     }
 

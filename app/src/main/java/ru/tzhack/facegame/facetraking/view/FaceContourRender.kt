@@ -9,9 +9,9 @@ import com.google.firebase.ml.vision.common.FirebaseVisionPoint
 import com.otaliastudios.cameraview.size.Size
 
 class FaceContourRender @JvmOverloads constructor(
-    context: Context,
-    private val attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+        context: Context,
+        private val attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
     private val dotSize = 3f
@@ -20,18 +20,12 @@ class FaceContourRender @JvmOverloads constructor(
         color = ContextCompat.getColor(context, android.R.color.white)
     }
 
-    private val paintRed = Paint().apply {
-        color = ContextCompat.getColor(context, android.R.color.holo_red_dark)
-        style = Paint.Style.FILL
-    }
-
     private val paintBox = Paint().apply {
         color = ContextCompat.getColor(context, android.R.color.holo_blue_dark)
         style = Paint.Style.STROKE
     }
 
-    private val faceContour = mutableListOf<List<FirebaseVisionPoint>>()
-    private val faceContourRed = mutableListOf<List<FirebaseVisionPoint>>()
+    private val faceContour = mutableListOf<FirebaseVisionPoint>()
 
     private var rect = Rect()
 
@@ -39,10 +33,9 @@ class FaceContourRender @JvmOverloads constructor(
     private var heightScaleFactor = 1.0F
 
     fun updateContour(
-        frameSize: Size,
-        faceRect: Rect?,
-        red: List<List<FirebaseVisionPoint>>,
-        points: List<List<FirebaseVisionPoint>>
+            frameSize: Size,
+            faceRect: Rect?,
+            points: List<FirebaseVisionPoint>
     ) {
         frameSize.let {
             widthScaleFactor = width.toFloat() / it.width.toFloat()
@@ -58,9 +51,6 @@ class FaceContourRender @JvmOverloads constructor(
         faceContour.clear()
         faceContour.addAll(points)
 
-        faceContourRed.clear()
-        faceContourRed.addAll(red)
-
         invalidate()
     }
 
@@ -70,26 +60,13 @@ class FaceContourRender @JvmOverloads constructor(
         if (this.width != 0 && this.height != 0) {
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
-            faceContour.forEachIndexed { index, contour ->
-                contour.forEachIndexed { index2, point ->
-                    canvas.drawCircle(
-                        point.x.translateX(),
-                        point.y.translateY(),
-                        if(index2 - 1 == 2) 5F else dotSize,
-                        if(index2 - 1 == 2) paintRed else paintWhite
-                    )
-                }
-            }
-
-            faceContourRed.forEach {
-                it.forEach { point ->
-                    canvas.drawCircle(
-                        point.x.translateX(),
-                        point.y.translateY(),
-                        5F,
-                        paintRed
-                    )
-                }
+            faceContour.forEach {
+                canvas.drawCircle(
+                        it.x.translateX(),
+                        it.y.translateY(),
+                        dotSize,
+                        paintWhite
+                )
             }
 
             canvas.drawRect(rect, paintBox)

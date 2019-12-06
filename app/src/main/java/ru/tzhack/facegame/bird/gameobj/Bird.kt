@@ -1,9 +1,14 @@
-package ru.tzhack.facegame.bird
+package ru.tzhack.facegame.bird.gameobj
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import ru.tzhack.facegame.R
+import ru.tzhack.facegame.bird.Movement
+import ru.tzhack.facegame.bird.Viewport
+import ru.tzhack.facegame.bird.utils.Position
+import ru.tzhack.facegame.bird.utils.SpriteAnimation
+import ru.tzhack.facegame.bird.utils.createBitmaps
 
 class Bird(
     context: Context,
@@ -63,7 +68,7 @@ class Bird(
         0.5f
     )
 
-    fun update(dt: Float, frontYWall: Wall?) {
+    fun update(dt: Float, frontYBlock: Block?) {
         if (speedBonusType != null) {
             speedBonusTime += dt
             if (speedBonusTime > SPEED_BONUS_MAX_TIME) {
@@ -86,7 +91,7 @@ class Bird(
         }
 
         val newTop = position.top + speedVertical * dt
-        if (frontYWall?.collision(position.copy(top = newTop)) != true) {
+        if (frontYBlock?.collision(position.copy(top = newTop)) != true) {
             position.top = newTop
         }
 
@@ -94,7 +99,7 @@ class Bird(
             is Movement.Left  -> {
                 if (position.left > 0) {
                     val newLeft = position.left - MAX_SPEED_HORIZONTAL * dt * state.speedRatio
-                    if (frontYWall?.collision(position.copy(left = newLeft)) != true) {
+                    if (frontYBlock?.collision(position.copy(left = newLeft)) != true) {
                         position.left = newLeft
                     }
                 }
@@ -102,7 +107,7 @@ class Bird(
             is Movement.Right -> {
                 if (position.left < screenX - position.width) {
                     val newLeft = position.left + MAX_SPEED_HORIZONTAL * dt * state.speedRatio
-                    if (frontYWall?.collision(position.copy(left = newLeft)) != true) {
+                    if (frontYBlock?.collision(position.copy(left = newLeft)) != true) {
                         position.left = newLeft
                     }
                 }

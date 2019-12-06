@@ -1,5 +1,7 @@
 package ru.tzhack.facegame.bird
 
+import ru.tzhack.facegame.bird.utils.Position
+
 class Viewport(private val screenY: Float) {
 
     private var y: Float = screenY

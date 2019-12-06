@@ -1,12 +1,14 @@
-package ru.tzhack.facegame.bird
+package ru.tzhack.facegame.bird.gameobj
 
 import android.content.Context
 import android.graphics.*
 import ru.tzhack.facegame.R
+import ru.tzhack.facegame.bird.Viewport
+import ru.tzhack.facegame.bird.utils.Position
 import kotlin.random.Random
 
 
-class Wall(
+class Block(
     private val posLeftTube: Position,
     private val posRightTube: Position
 ) {
@@ -33,7 +35,7 @@ class Wall(
 
         private const val startY = 1000f
 
-        fun generate(context: Context, screenX: Float, size: Int): List<Wall> {
+        fun generate(context: Context, screenX: Float, size: Int): List<Block> {
             bitmap = Bitmap.createScaledBitmap(
                 BitmapFactory.decodeResource(
                     context.resources,
@@ -44,7 +46,7 @@ class Wall(
                 false
             )
 
-            val walls = ArrayList<Wall>()
+            val walls = ArrayList<Block>()
             var y = startY
             for (i in 0 until size) {
                 val leftPos = 0f
@@ -53,9 +55,19 @@ class Wall(
                 val rightPos = leftPos + leftWidth + spaceSize
                 val rightWidth = screenX - rightPos
 
-                walls += Wall(
-                    posLeftTube = Position(leftPos, y, leftWidth, HEIGHT_SPRITE),
-                    posRightTube = Position(rightPos, y, rightWidth, HEIGHT_SPRITE)
+                walls += Block(
+                    posLeftTube = Position(
+                        leftPos,
+                        y,
+                        leftWidth,
+                        HEIGHT_SPRITE
+                    ),
+                    posRightTube = Position(
+                        rightPos,
+                        y,
+                        rightWidth,
+                        HEIGHT_SPRITE
+                    )
                 )
 
                 y += wallsSpacing + HEIGHT_SPRITE
@@ -76,8 +88,14 @@ class Wall(
     }
 
     fun collision(position: Position): Boolean {
-        if ((!crashedLeft && posLeftTube.contains(position, COLLISION_ALLOWED_SPRITE)) ||
-            (!crashedRight && posRightTube.contains(position, COLLISION_ALLOWED_SPRITE))
+        if ((!crashedLeft && posLeftTube.contains(
+                position,
+                COLLISION_ALLOWED_SPRITE
+            )) ||
+            (!crashedRight && posRightTube.contains(
+                position,
+                COLLISION_ALLOWED_SPRITE
+            ))
         ) {
             return true
         }
@@ -86,11 +104,17 @@ class Wall(
     }
 
     fun checkCrashed(position: Position): Boolean {
-        if (!crashedLeft && posLeftTube.contains(position, COLLISION_ALLOWED_SPRITE)) {
+        if (!crashedLeft && posLeftTube.contains(
+                position,
+                COLLISION_ALLOWED_SPRITE
+            )) {
             crashedLeft = true
             return true
         }
-        if (!crashedRight && posRightTube.contains(position, COLLISION_ALLOWED_SPRITE)) {
+        if (!crashedRight && posRightTube.contains(
+                position,
+                COLLISION_ALLOWED_SPRITE
+            )) {
             crashedRight = true
             return true
         }

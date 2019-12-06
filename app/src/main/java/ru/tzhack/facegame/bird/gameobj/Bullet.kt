@@ -1,10 +1,13 @@
-package ru.tzhack.facegame.bird
+package ru.tzhack.facegame.bird.gameobj
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import ru.tzhack.facegame.R
+import ru.tzhack.facegame.bird.Viewport
+import ru.tzhack.facegame.bird.utils.Position
+import ru.tzhack.facegame.bird.utils.createBitmap
 
 class Bullet(val position: Position) {
 
@@ -23,8 +26,16 @@ class Bullet(val position: Position) {
         private const val CRASHED_MAX_TIME = 0.5f
 
         fun init(context: Context) {
-            bitmapFly = context.createBitmap(R.drawable.bullet_flies, widthFly, heightFly)
-            bitmapCrashed = context.createBitmap(R.drawable.bullet_crashed, sideCrashed, sideCrashed)
+            bitmapFly = context.createBitmap(
+                R.drawable.bullet_flies,
+                widthFly,
+                heightFly
+            )
+            bitmapCrashed = context.createBitmap(
+                R.drawable.bullet_crashed,
+                sideCrashed,
+                sideCrashed
+            )
         }
 
         fun create(birdPosition: Position): Bullet {

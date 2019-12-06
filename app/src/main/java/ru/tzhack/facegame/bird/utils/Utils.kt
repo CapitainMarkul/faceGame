@@ -1,4 +1,4 @@
-package ru.tzhack.facegame.bird
+package ru.tzhack.facegame.bird.utils
 
 import android.content.Context
 import android.graphics.Bitmap

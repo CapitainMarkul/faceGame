@@ -1,15 +1,16 @@
-package ru.tzhack.facegame.bird
+package ru.tzhack.facegame.bird.gameobj
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import ru.tzhack.facegame.R
+import ru.tzhack.facegame.bird.utils.createBitmap
 
-private const val sideSprite = 90f
 
 class GameToolbar(context: Context) {
 
+    private val sideSprite = 90f
     var time = 60f
     var shotCount = 2
 

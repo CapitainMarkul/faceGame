@@ -5,6 +5,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.annotation.DrawableRes
 
+/**
+ *  Загрузка изображений
+ */
 fun Context.createBitmap(@DrawableRes resId: Int, width: Float, height: Float): Bitmap {
     return Bitmap.createScaledBitmap(
         BitmapFactory.decodeResource(

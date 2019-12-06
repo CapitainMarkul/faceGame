@@ -16,11 +16,11 @@ data class Position(
     val bottom: Float
         get() = top - height
 
-    fun contains(pos: Position, allowed: Float = 0f): Boolean {
-        return pos.right - allowed >= left && pos.left + allowed < right && pos.top - allowed > bottom && pos.bottom + allowed < top
+    fun contains(pos: Position): Boolean {
+        return pos.right >= left && pos.left < right && pos.top > bottom && pos.bottom < top
     }
 
-    fun containsY(pos: Position, allowedY: Float = 0f): Boolean {
-        return pos.top - allowedY > bottom && pos.bottom + allowedY < top
+    fun containsY(pos: Position): Boolean {
+        return pos.top > bottom && pos.bottom < top
     }
 }

@@ -8,9 +8,6 @@ import ru.tzhack.facegame.R
 
 class Bullet(val position: Position) {
 
-    var crashedMode = false
-    private val startTopPosition = position.top
-
     companion object {
         const val shotDebounce = 2000
 
@@ -23,6 +20,7 @@ class Bullet(val position: Position) {
         private lateinit var bitmapFly: Bitmap
         private const val sideCrashed = 224f
         private lateinit var bitmapCrashed: Bitmap
+        private const val CRASHED_MAX_TIME = 0.5f
 
         fun init(context: Context) {
             bitmapFly = context.createBitmap(R.drawable.bullet_flies, widthFly, heightFly)
@@ -41,17 +39,39 @@ class Bullet(val position: Position) {
         }
     }
 
-    fun isDistanceOver(): Boolean {
-        return position.top - startTopPosition >= MAX_DISTANCE
-    }
+    private var crashed = false
+    private val startTopPosition = position.top
+    private var crashedTime = 0f
 
     fun update(dt: Float) {
-        position.top += SPEED * dt
+        if (!crashed) {
+            position.top += SPEED * dt
+        } else {
+            crashedTime += dt
+        }
+    }
+
+    fun isCleared(): Boolean {
+        return if (crashed) {
+            crashedTime >= CRASHED_MAX_TIME
+        } else {
+            position.top - startTopPosition >= MAX_DISTANCE
+        }
+    }
+
+    fun setCrashed() {
+        crashed = true
+        val offset = sideCrashed / 2f
+        position.left -= offset
+        position.top += offset
+        if (position.left < 0f) {
+            position.left = 0f
+        }
     }
 
     fun draw(canvas: Canvas, paint: Paint, viewport: Viewport) {
         canvas.drawBitmap(
-            if (crashedMode) bitmapCrashed else bitmapFly,
+            if (crashed) bitmapCrashed else bitmapFly,
             position.left,
             viewport.worldToScreenPoint(position.top),
             paint

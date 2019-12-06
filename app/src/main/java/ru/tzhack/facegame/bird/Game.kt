@@ -38,7 +38,7 @@ class Game(
     private var thread: Thread? = null
 
     // Отключаем ручное управление
-    private val manualInput = false
+    private val manualInput = true
 
     private var canvas: Canvas = Canvas()
     private val paint: Paint = Paint()
@@ -59,7 +59,7 @@ class Game(
     private val bullets = ArrayList<Bullet>()
     private var lastShotTime = 0L
     private val bonuses = ArrayList<Bonus>()
-    private val gameToolbar = GameToolbar()
+    private val gameToolbar = GameToolbar(context)
 
     private val viewport = Viewport(size.y.toFloat())
     private val input = Input(size)
@@ -124,9 +124,9 @@ class Game(
             val bonus = bonusesIterator.next()
             if (bonus.collision(bird.position)) {
                 when (bonus.type) {
-                    BonusType.SPEED_UP   -> bird.speedUp()
-                    BonusType.SPEED_DOWN -> bird.speedDown()
-                    //BonusType.SHOT       -> bird.addShot()
+                    BonusType.SPEED_UP,
+                    BonusType.SPEED_DOWN -> bird.setSpeedBonus(bonus.type)
+                    BonusType.SHOT       -> gameToolbar.shotCount++
                     BonusType.TIME       -> gameToolbar.addTime()
                 }
                 bonusesIterator.remove()
@@ -140,9 +140,13 @@ class Game(
         val bulletsIterator = bullets.iterator()
         while (bulletsIterator.hasNext()) {
             val bullet = bulletsIterator.next()
-            if (bullet.isDistanceOver()) {
+            if (bullet.isCleared()) {
                 bulletsIterator.remove()
             } else {
+                walls.find { it.checkCrashed(bullet.position) }?.let {
+                    bullet.setCrashed()
+                }
+
                 bullet.update(dt)
             }
         }
@@ -187,7 +191,8 @@ class Game(
 
     fun shot() {
         if (!pause && playing) {
-            if (lastShotTime + Bullet.shotDebounce < SystemClock.uptimeMillis()) {
+            if (gameToolbar.shotCount > 0 && lastShotTime + Bullet.shotDebounce < SystemClock.uptimeMillis()) {
+                gameToolbar.shotCount--
                 bullets.add(Bullet.create(bird.position))
                 bird.setShotState()
                 lastShotTime = SystemClock.uptimeMillis()

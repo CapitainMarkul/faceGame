@@ -61,8 +61,12 @@ class BirdFragment : Fragment() {
 
         override fun onHeroSuperPowerAnim() {
             game?.run {
-                if (pause) hideBirdControl()
-                pause = false
+                if (pause) {
+                    hideBirdControl()
+                    pause = false
+                } else {
+                    shot()
+                }
             }
         }
 
@@ -75,7 +79,7 @@ class BirdFragment : Fragment() {
         }
 
         override fun onHeroDoubleEyeAnim() {
-            game?.shot()
+
         }
 
         override fun onHeroMouthOpenAnim() {

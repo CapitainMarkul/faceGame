@@ -16,16 +16,13 @@ enum class FaceEmoji(
 
     SMILE(R.drawable.smile_anim, R.string.face_emoji_smile),
 
-    /* TODO: */
-    MOUTH_OPEN(R.drawable.smile_anim, R.string.face_emoji_mouth_open),
+    MOUTH_OPEN(R.drawable.mouth_open_anim, R.string.face_emoji_mouth_open),
 
     HEAD_BIAS_LEFT(R.drawable.head_bias_left_anim, R.string.face_emoji_head_bias_left),
     HEAD_BIAS_RIGHT(R.drawable.head_bias_right_anim, R.string.face_emoji_head_bias_right),
 
-    /* TODO: */
-    HEAD_BIAS_DOWN(R.drawable.smile_anim/*head_bias_down_anim*/, R.string.face_emoji_head_bias_down),
-    /* TODO: */
-    HEAD_BIAS_UP(R.drawable.smile_anim/*head_bias_up_anim*/, R.string.face_emoji_head_bias_up),
+    HEAD_BIAS_DOWN(R.drawable.head_bias_down_anim, R.string.face_emoji_head_bias_down),
+    HEAD_BIAS_UP(R.drawable.head_bias_up_anim, R.string.face_emoji_head_bias_up),
 
     HEAD_ROTATE_LEFT(R.drawable.head_rotate_left_anim, R.string.face_emoji_head_rotate_left),
     HEAD_ROTATE_RIGHT(R.drawable.head_rotate_right_anim, R.string.face_emoji_head_rotate_right),

@@ -51,7 +51,7 @@ class FaceTrackingFragment : Fragment() {
         FaceEmoji.LEFT_EYE_CLOSE,
         FaceEmoji.RIGHT_EYE_CLOSE,
 
-        FaceEmoji.DOUBLE_EYEBROWN_MOVE,
+//        FaceEmoji.DOUBLE_EYEBROWN_MOVE,
 
         FaceEmoji.SMILE,
         FaceEmoji.MOUTH_OPEN,

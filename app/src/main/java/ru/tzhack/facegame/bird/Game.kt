@@ -61,7 +61,7 @@ class Game(
     private val bullets = ArrayList<Bullet>()
     private var lastShotTime = 0L
     private val bonuses = ArrayList<Bonus>()
-    private val gameToolbar = GameToolbar(context)
+    private val gameToolbar = GameToolbar(context, size.x.toFloat())
 
     private val viewport = Viewport(size.y.toFloat())
     private val input = Input(size)
@@ -128,7 +128,7 @@ class Game(
                 when (bonus.type) {
                     BonusType.SPEED_UP,
                     BonusType.SPEED_DOWN -> bird.setSpeedBonus(bonus.type)
-                    BonusType.SHOT       -> gameToolbar.shotCount++
+                    BonusType.SHOT       -> gameToolbar.countShots++
                     BonusType.TIME       -> gameToolbar.addTime()
                 }
                 bonusesIterator.remove()
@@ -193,8 +193,8 @@ class Game(
 
     fun shot() {
         if (!pause && playing) {
-            if (gameToolbar.shotCount > 0 && lastShotTime + Bullet.shotDebounce < SystemClock.uptimeMillis()) {
-                gameToolbar.shotCount--
+            if (gameToolbar.countShots > 0 && lastShotTime + Bullet.shotDebounce < SystemClock.uptimeMillis()) {
+                gameToolbar.countShots--
                 bullets.add(Bullet.create(bird.position))
                 bird.setShotState()
                 lastShotTime = SystemClock.uptimeMillis()

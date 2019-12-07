@@ -2,6 +2,7 @@ package ru.tzhack.facegame.bird.gameobj
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.Paint
 import ru.tzhack.facegame.R
 import ru.tzhack.facegame.bird.Movement
@@ -56,6 +57,22 @@ class Bird(
         0.5f
     )
 
+    private val darkSpriteAnimation = SpriteAnimation(
+        context.createBitmaps(
+            WIDTH_SPRITE,
+            HEIGHT_SPRITE,
+            R.drawable.an1,
+            R.drawable.an2,
+            R.drawable.an3,
+            R.drawable.an4,
+            R.drawable.an5,
+            R.drawable.an6,
+            R.drawable.an7,
+            R.drawable.an8
+        ),
+        0.5f
+    )
+
     private val shotSpriteAnimation = SpriteAnimation(
         context.createBitmaps(
             WIDTH_SPRITE,
@@ -89,6 +106,7 @@ class Bird(
         } else {
             spriteAnimation.update(dt)
         }
+        darkSpriteAnimation.update(dt)
 
         val newTop = position.top + speedVertical * dt
         if (frontYBlock?.collision(position.copy(top = newTop)) != true) {
@@ -115,11 +133,33 @@ class Bird(
         }
     }
 
-    fun draw(canvas: Canvas, paint: Paint, viewport: Viewport) {
+    fun draw(canvas: Canvas, paint: Paint, viewport: Viewport, nightMode: Boolean) {
+        val matrix = Matrix()
+        val values = FloatArray(9) { 0f }
+        matrix.getValues(values)
+        var offsetY = 0f
+
+        when (movement) {
+            is Movement.Left  -> {
+                matrix.setRotate(-25f)
+                offsetY = -50f
+            }
+            is Movement.Right -> {
+                matrix.setRotate(25f)
+            }
+        }
+
+        val matrixX = values[Matrix.MTRANS_X]
+        val matrixY = values[Matrix.MTRANS_Y]
+        matrix.postTranslate(position.left - matrixX, viewport.worldToScreenPoint(position.top) - matrixY - offsetY)
+
         canvas.drawBitmap(
-            if (shotState) shotSpriteAnimation.getFrame() else spriteAnimation.getFrame(),
-            position.left,
-            viewport.worldToScreenPoint(position.top),
+            if (nightMode) {
+                darkSpriteAnimation.getFrame()
+            } else {
+                if (shotState) shotSpriteAnimation.getFrame() else spriteAnimation.getFrame()
+            },
+            matrix,
             paint
         )
     }

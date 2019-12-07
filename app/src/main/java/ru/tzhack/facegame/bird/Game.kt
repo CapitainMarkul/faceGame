@@ -33,13 +33,14 @@ class Game(
     Runnable {
 
     var endGameListener: ((timeOver: Boolean) -> Unit)? = null
+    var nightMode = false
 
     private var playing = false
-    var pause = true
+    private var pause = true
     private var thread: Thread? = null
 
     // Отключаем ручное управление
-    private val manualInput = true
+    private val manualInput = false
 
     private var canvas: Canvas = Canvas()
     private val paint: Paint = Paint()
@@ -67,6 +68,7 @@ class Game(
     private val input = Input(size)
 
     private val backgroundColor = ContextCompat.getColor(context, R.color.colorPrimaryDark)
+    private val backgroundDarkColor = ContextCompat.getColor(context, R.color.colorBirdGameBackgroundDark)
 
     init {
         Bullet.init(context)
@@ -87,6 +89,13 @@ class Game(
             thread?.join()
             thread = null
         }
+    }
+
+    fun isPause() = pause
+
+    fun setPause(value: Boolean) {
+        lastShotTime = SystemClock.uptimeMillis()
+        pause = value
     }
 
     override fun run() {
@@ -172,7 +181,7 @@ class Game(
             if (lockCanvas != null) {
                 canvas = lockCanvas
 
-                canvas.drawColor(backgroundColor)
+                canvas.drawColor(if (nightMode) backgroundDarkColor else backgroundColor)
 
                 blocks.forEach { it.draw(canvas, paint, viewport) }
 
@@ -182,7 +191,7 @@ class Game(
 
                 bullets.forEach { it.draw(canvas, paint, viewport) }
 
-                bird.draw(canvas, paint, viewport)
+                bird.draw(canvas, paint, viewport, nightMode)
 
                 gameToolbar.draw(canvas, paint)
 

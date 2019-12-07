@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
 import com.otaliastudios.cameraview.size.Size
@@ -16,6 +18,7 @@ import ru.tzhack.facegame.facetraking.mlkit.MlKitEngine
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitDebugListener
 import ru.tzhack.facegame.facetraking.mlkit.listener.MlKitHeroListener
 import kotlin.math.absoluteValue
+
 
 interface BirdGameControlListener {
     fun onBirdGameOver()
@@ -28,12 +31,13 @@ class BirdFragment : Fragment() {
 
         fun createFragment(): Fragment = BirdFragment()
 
-        private const val angleMaxSpeed = 30f
+        private const val angleMaxSpeed = 25f
         private const val angleStopped = 3f
     }
 
     private var game: Game? = null
     private var birdGameControlListener: BirdGameControlListener? = null
+    private var nightMode = false
 
     private val mlKitHeroListener = object : MlKitHeroListener {
         override fun onHeroHorizontalAnim(headEulerAngleZ: Float) {
@@ -61,9 +65,9 @@ class BirdFragment : Fragment() {
 
         override fun onHeroSuperPowerAnim() {
             game?.run {
-                if (pause) {
+                if (isPause()) {
                     hideBirdControl()
-                    pause = false
+                    setPause(false)
                 } else {
                     shot()
                 }
@@ -71,7 +75,6 @@ class BirdFragment : Fragment() {
         }
 
         override fun onHeroRightEyeAnim() {
-
         }
 
         override fun onHeroLeftEyeAnim() {
@@ -79,7 +82,7 @@ class BirdFragment : Fragment() {
         }
 
         override fun onHeroDoubleEyeAnim() {
-
+            changeNightMode()
         }
 
         override fun onHeroMouthOpenAnim() {
@@ -140,6 +143,17 @@ class BirdFragment : Fragment() {
                     ) { _, _ -> birdGameControlListener?.onBirdGameOver() }
                     .create()
                     .show()
+            }
+        }
+    }
+
+    private fun changeNightMode() {
+        nightMode = !nightMode
+        game?.nightMode = nightMode
+        activity?.window?.let {
+            it.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            context?.let { context ->
+                it.statusBarColor = ContextCompat.getColor(context, if (nightMode) R.color.colorBirdGameBackgroundDark else R.color.colorPrimaryDark)
             }
         }
     }

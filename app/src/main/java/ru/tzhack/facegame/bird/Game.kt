@@ -33,13 +33,14 @@ class Game(
     Runnable {
 
     var endGameListener: ((timeOver: Boolean) -> Unit)? = null
+    var nightMode = false
 
     private var playing = false
-    var pause = true
+    private var pause = true
     private var thread: Thread? = null
 
     // Отключаем ручное управление
-    private val manualInput = true
+    private val manualInput = false
 
     private var canvas: Canvas = Canvas()
     private val paint: Paint = Paint()
@@ -61,12 +62,13 @@ class Game(
     private val bullets = ArrayList<Bullet>()
     private var lastShotTime = 0L
     private val bonuses = ArrayList<Bonus>()
-    private val gameToolbar = GameToolbar(context)
+    private val gameToolbar = GameToolbar(context, size.x.toFloat())
 
     private val viewport = Viewport(size.y.toFloat())
     private val input = Input(size)
 
     private val backgroundColor = ContextCompat.getColor(context, R.color.colorPrimaryDark)
+    private val backgroundDarkColor = ContextCompat.getColor(context, R.color.colorBirdGameBackgroundDark)
 
     init {
         Bullet.init(context)
@@ -87,6 +89,13 @@ class Game(
             thread?.join()
             thread = null
         }
+    }
+
+    fun isPause() = pause
+
+    fun setPause(value: Boolean) {
+        lastShotTime = SystemClock.uptimeMillis()
+        pause = value
     }
 
     override fun run() {
@@ -128,7 +137,7 @@ class Game(
                 when (bonus.type) {
                     BonusType.SPEED_UP,
                     BonusType.SPEED_DOWN -> bird.setSpeedBonus(bonus.type)
-                    BonusType.SHOT       -> gameToolbar.shotCount++
+                    BonusType.SHOT       -> gameToolbar.countShots++
                     BonusType.TIME       -> gameToolbar.addTime()
                 }
                 bonusesIterator.remove()
@@ -172,7 +181,7 @@ class Game(
             if (lockCanvas != null) {
                 canvas = lockCanvas
 
-                canvas.drawColor(backgroundColor)
+                canvas.drawColor(if (nightMode) backgroundDarkColor else backgroundColor)
 
                 blocks.forEach { it.draw(canvas, paint, viewport) }
 
@@ -182,7 +191,7 @@ class Game(
 
                 bullets.forEach { it.draw(canvas, paint, viewport) }
 
-                bird.draw(canvas, paint, viewport)
+                bird.draw(canvas, paint, viewport, nightMode)
 
                 gameToolbar.draw(canvas, paint)
 
@@ -193,8 +202,8 @@ class Game(
 
     fun shot() {
         if (!pause && playing) {
-            if (gameToolbar.shotCount > 0 && lastShotTime + Bullet.shotDebounce < SystemClock.uptimeMillis()) {
-                gameToolbar.shotCount--
+            if (gameToolbar.countShots > 0 && lastShotTime + Bullet.shotDebounce < SystemClock.uptimeMillis()) {
+                gameToolbar.countShots--
                 bullets.add(Bullet.create(bird.position))
                 bird.setShotState()
                 lastShotTime = SystemClock.uptimeMillis()

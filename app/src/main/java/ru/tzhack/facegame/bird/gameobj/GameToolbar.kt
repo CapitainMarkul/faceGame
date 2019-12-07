@@ -8,26 +8,42 @@ import ru.tzhack.facegame.R
 import ru.tzhack.facegame.bird.utils.createBitmap
 
 
-class GameToolbar(context: Context) {
+class GameToolbar(context: Context, widthScreen : Float) {
 
-    private val sideSprite = 90f
+    private val sideSprite = 70f
     var time = 60f
-    var shotCount = 2
+    var countShots = 2
 
-    private val shotBitmap = context.createBitmap(R.drawable.bonus_shot, sideSprite, sideSprite)
+    private val imageShots = context.createBitmap(R.drawable.bonus_shot, sideSprite, sideSprite)
 
     fun update(dt: Float) {
         time -= dt
     }
 
-    fun draw(canvas: Canvas, paint: Paint) {
-        paint.color = Color.RED
-        paint.style = Paint.Style.FILL
-        paint.textSize = 100f
-        canvas.drawText(time.toInt().toString(), 40f, 100f, paint)
+    companion object {
+        private const val yTopIndent = 55f
+    }
 
-        canvas.drawText(shotCount.toString(), 300f, 100f, paint)
-        canvas.drawBitmap(shotBitmap, 200f, 20f, paint)
+    private val startPositionTime = widthScreen - 285f
+
+    private val startPositionShotImg = widthScreen - 140f
+
+    private val startPositionCountShot = widthScreen - 45f
+
+    fun draw(canvas: Canvas, paint: Paint) {
+        paint.color = Color.BLACK
+        paint.style = Paint.Style.FILL
+        paint.textSize = 50f
+
+        canvas.drawText(timeToText(), startPositionTime,  yTopIndent, paint)
+        canvas.drawBitmap(imageShots, startPositionShotImg,  0f, paint)
+        canvas.drawText(countShots.toString(), startPositionCountShot,  yTopIndent, paint)
+    }
+
+    private fun timeToText() : String {
+        val second = time.toInt() % 60
+        val secondStr : String = if(second < 10) "0" + second.toString() else second.toString()
+        return "0" + (time.toInt() / 60).toString() + ":" + secondStr
     }
 
     fun addTime() {
